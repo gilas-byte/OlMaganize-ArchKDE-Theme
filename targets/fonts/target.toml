@@ -1,0 +1,52 @@
+name = "fonts"
+description = "Fontes do KDE: Inter na interface, CaskaydiaCove Nerd Font na monoespaçada"
+order = 10
+packages = ["inter-font", "ttf-cascadia-code-nerd"]
+aur_packages = []
+detect = "command -v kwriteconfig6"
+
+# transform = "font-family" troca só a família e mantém tamanho/peso atuais do usuário.
+[[keys]]
+file = "kdeglobals"
+group = "General"
+key = "font"
+transform = "font-family"
+value = "${font_ui}"
+
+[[keys]]
+file = "kdeglobals"
+group = "General"
+key = "menuFont"
+transform = "font-family"
+value = "${font_ui}"
+
+[[keys]]
+file = "kdeglobals"
+group = "General"
+key = "toolBarFont"
+transform = "font-family"
+value = "${font_ui}"
+
+[[keys]]
+file = "kdeglobals"
+group = "General"
+key = "smallestReadableFont"
+transform = "font-family"
+value = "${font_ui}"
+
+[[keys]]
+file = "kdeglobals"
+group = "WM"
+key = "activeFont"
+transform = "font-family"
+value = "${font_ui}"
+
+[[keys]]
+file = "kdeglobals"
+group = "General"
+key = "fixed"
+transform = "font-family"
+value = "${font_mono}"
+
+[[post]]
+cmd = "dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:1 int32:0"
