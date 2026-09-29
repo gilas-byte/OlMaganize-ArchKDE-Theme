@@ -1,5 +1,5 @@
 name = "klassy"
-description = "Klassy: decoração de janela e estilo de widgets (fase 1)"
+description = "Klassy: decoração de janela (os widgets são do alvo kvantum)"
 order = 30
 packages = []
 aur_packages = ["klassy"]
@@ -18,13 +18,6 @@ file = "kwinrc"
 group = "org.kde.kdecoration2"
 key = "theme"
 value = "${kde_decoration_theme}"
-
-# Fonte única: palette.toml [kde].widget_style (a fase 2 troca para kvantum lá).
-[[keys]]
-file = "kdeglobals"
-group = "KDE"
-key = "widgetStyle"
-value = "${kde_widget_style}"
 
 [[keys]]
 file = "klassy/klassyrc"

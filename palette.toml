@@ -88,10 +88,10 @@ shadow_strength = 128
 ui = "Inter"
 mono = "CaskaydiaCove Nerd Font"
 
-# Integração com o KDE. widget_style é o ÚNICO lugar que define o estilo de widgets:
-# a fase 2 troca "Klassy" por "kvantum" aqui e nada mais.
+# Integração com o KDE. widget_style é o ÚNICO lugar que define o estilo de widgets
+# (aplicado pelo alvo kvantum e pelo pacote Look-and-Feel). Fase 1: "Klassy"; fase 2: "kvantum".
 [kde]
-widget_style = "Klassy"
+widget_style = "kvantum"
 decoration_library = "org.kde.klassy"
 decoration_theme = "Klassy"
 icon_base = "Papirus-Dark"

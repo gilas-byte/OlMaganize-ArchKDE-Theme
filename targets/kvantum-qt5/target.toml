@@ -1,0 +1,8 @@
+name = "kvantum-qt5"
+description = "Plugin Kvantum para apps Qt5 (só se houver Qt5 instalado)"
+order = 36
+packages = ["kvantum-qt5"]
+aur_packages = []
+# Apps Qt5 (ex.: VLC 3) leem o mesmo widgetStyle=kvantum, mas precisam do plugin Qt5.
+# O tema em ~/.config/Kvantum é o mesmo; este alvo só garante o pacote.
+detect = "pacman -Qq qt5-base >/dev/null 2>&1"
