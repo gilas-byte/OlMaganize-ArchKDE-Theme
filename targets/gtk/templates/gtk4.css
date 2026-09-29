@@ -1,0 +1,100 @@
+/* ${theme_name} para GTK4/libadwaita — gerado a partir de palette.toml, não editar. */
+
+/* Nomes clássicos de @define-color (libadwaita < 1.6 e apps GTK4 sem libadwaita). */
+@define-color accent_color ${accent_primary};
+@define-color accent_bg_color ${accent_primary};
+@define-color accent_fg_color ${accent_on_primary};
+@define-color destructive_color ${sem_red};
+@define-color destructive_bg_color ${sem_red};
+@define-color destructive_fg_color ${base_140};
+@define-color success_color ${sem_green};
+@define-color success_bg_color ${sem_green};
+@define-color success_fg_color ${base_140};
+@define-color warning_color ${sem_orange};
+@define-color warning_bg_color ${sem_orange};
+@define-color warning_fg_color ${base_140};
+@define-color error_color ${sem_red};
+@define-color error_bg_color ${sem_red};
+@define-color error_fg_color ${base_140};
+@define-color window_bg_color ${base_100};
+@define-color window_fg_color ${base_20};
+@define-color view_bg_color ${base_100};
+@define-color view_fg_color ${base_20};
+@define-color headerbar_bg_color ${base_110};
+@define-color headerbar_fg_color ${base_20};
+@define-color headerbar_border_color ${base_20};
+@define-color headerbar_backdrop_color ${base_110};
+@define-color headerbar_shade_color ${shade_strong};
+@define-color sidebar_bg_color ${base_110};
+@define-color sidebar_fg_color ${base_20};
+@define-color sidebar_backdrop_color ${base_110};
+@define-color sidebar_shade_color ${shade_soft};
+@define-color secondary_sidebar_bg_color ${base_110};
+@define-color secondary_sidebar_fg_color ${base_20};
+@define-color card_bg_color ${base_90};
+@define-color card_fg_color ${base_20};
+@define-color card_shade_color ${shade_strong};
+@define-color dialog_bg_color ${base_90};
+@define-color dialog_fg_color ${base_20};
+@define-color popover_bg_color ${base_90};
+@define-color popover_fg_color ${base_20};
+@define-color popover_shade_color ${shade_soft};
+@define-color thumbnail_bg_color ${base_90};
+@define-color thumbnail_fg_color ${base_20};
+@define-color shade_color ${shade_strong};
+@define-color scrollbar_outline_color ${shade_outline};
+
+/* Variáveis CSS (libadwaita >= 1.6). */
+:root {
+  --accent-color: ${accent_primary};
+  --accent-bg-color: ${accent_primary};
+  --accent-fg-color: ${accent_on_primary};
+  --destructive-bg-color: ${sem_red};
+  --destructive-fg-color: ${base_140};
+  --success-bg-color: ${sem_green};
+  --success-fg-color: ${base_140};
+  --warning-bg-color: ${sem_orange};
+  --warning-fg-color: ${base_140};
+  --error-bg-color: ${sem_red};
+  --error-fg-color: ${base_140};
+  --window-bg-color: ${base_100};
+  --window-fg-color: ${base_20};
+  --view-bg-color: ${base_100};
+  --view-fg-color: ${base_20};
+  --headerbar-bg-color: ${base_110};
+  --headerbar-fg-color: ${base_20};
+  --headerbar-backdrop-color: ${base_110};
+  --sidebar-bg-color: ${base_110};
+  --sidebar-fg-color: ${base_20};
+  --sidebar-backdrop-color: ${base_110};
+  --secondary-sidebar-bg-color: ${base_110};
+  --secondary-sidebar-fg-color: ${base_20};
+  --card-bg-color: ${base_90};
+  --card-fg-color: ${base_20};
+  --dialog-bg-color: ${base_90};
+  --dialog-fg-color: ${base_20};
+  --popover-bg-color: ${base_90};
+  --popover-fg-color: ${base_20};
+  --thumbnail-bg-color: ${base_90};
+  --thumbnail-fg-color: ${base_20};
+  --window-radius: ${shape_radius_l}px;
+}
+
+/* Forma */
+button, entry, spinbutton, dropdown > button, row.entry {
+  border-radius: ${shape_radius_m}px;
+}
+
+checkbutton check {
+  border-radius: ${shape_radius_s}px;
+}
+
+popover > contents, .card, list.boxed-list {
+  border-radius: ${shape_radius_l}px;
+}
+
+/* Seleção sempre roxa: o libadwaita usa o accent (amarelo) na seleção de texto. */
+selection, text selection, label selection {
+  background-color: ${selection_bg};
+  color: ${selection_fg};
+}

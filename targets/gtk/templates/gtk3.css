@@ -1,0 +1,51 @@
+/* ${theme_name} para GTK3 — gerado a partir de palette.toml, não editar. */
+
+@define-color theme_bg_color ${base_100};
+@define-color theme_fg_color ${base_20};
+@define-color theme_base_color ${base_100};
+@define-color theme_text_color ${base_20};
+@define-color theme_selected_bg_color ${selection_bg};
+@define-color theme_selected_fg_color ${selection_fg};
+@define-color insensitive_bg_color ${base_110};
+@define-color insensitive_fg_color ${base_60};
+@define-color insensitive_base_color ${base_110};
+@define-color theme_unfocused_bg_color ${base_100};
+@define-color theme_unfocused_fg_color ${base_40};
+@define-color theme_unfocused_base_color ${base_100};
+@define-color theme_unfocused_text_color ${base_40};
+@define-color theme_unfocused_selected_bg_color ${selection_bg_subtle};
+@define-color theme_unfocused_selected_fg_color ${selection_fg};
+@define-color borders ${base_70};
+@define-color unfocused_borders ${base_80};
+@define-color warning_color ${sem_orange};
+@define-color error_color ${sem_red};
+@define-color success_color ${sem_green};
+@define-color link_color ${sem_blue};
+@define-color link_visited_color ${accent_secondary};
+@define-color content_view_bg ${base_100};
+@define-color theme_titlebar_background ${base_110};
+@define-color theme_titlebar_foreground ${base_20};
+@define-color theme_titlebar_background_backdrop ${base_110};
+@define-color theme_titlebar_foreground_backdrop ${base_40};
+@define-color tooltip_background ${base_140};
+@define-color tooltip_text ${base_20};
+@define-color tooltip_border ${base_70};
+
+/* Forma */
+button, entry, spinbutton, combobox button, treeview entry {
+  border-radius: ${shape_radius_m}px;
+}
+
+check {
+  border-radius: ${shape_radius_s}px;
+}
+
+menu, .menu, popover, .popover, tooltip {
+  border-radius: ${shape_radius_l}px;
+}
+
+/* Seleção sempre roxa (nunca amarela). */
+selection, *:selected {
+  background-color: ${selection_bg};
+  color: ${selection_fg};
+}

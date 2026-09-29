@@ -1,0 +1,42 @@
+name = "gtk"
+description = "GTK3/GTK4 (libadwaita): cores nomeadas e raios, via gibi.css importado no gtk.css"
+order = 50
+packages = ["breeze-gtk"]
+aur_packages = []
+detect = "command -v qdbus6"
+
+# O colors.css é gerado pelo KDE a partir do esquema de cores e não é tocado.
+# O gtk.css recebe só um @import, logo depois dos @import existentes (o do colors.css).
+
+[[files]]
+src = "templates/gtk3.css"
+dest = "~/.config/gtk-3.0/${theme_id}.css"
+mode = "symlink"
+
+[[files]]
+src = "templates/gtk4.css"
+dest = "~/.config/gtk-4.0/${theme_id}.css"
+mode = "symlink"
+
+[[files]]
+src = "templates/import.css"
+dest = "~/.config/gtk-3.0/gtk.css"
+mode = "managed-block"
+comment = "/*"
+position = "after-imports"
+
+[[files]]
+src = "templates/import.css"
+dest = "~/.config/gtk-4.0/gtk.css"
+mode = "managed-block"
+comment = "/*"
+position = "after-imports"
+
+# Temas GTK3 como o Orchis compilam as cores no CSS e ignoram @define-color.
+# O Breeze-GTK lê as cores do esquema do KDE (colors.css) e as definições do gibi.css.
+[[states]]
+name = "tema GTK3"
+get = "qdbus6 org.kde.kded6 /modules/gtkconfig org.kde.GtkConfig.gtkTheme"
+set = "qdbus6 org.kde.kded6 /modules/gtkconfig org.kde.GtkConfig.setGtkTheme \"$$GIBI_VALUE\""
+value = "Breeze"
+default = "Breeze"
