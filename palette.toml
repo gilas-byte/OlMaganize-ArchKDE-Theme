@@ -1,0 +1,89 @@
+# Fonte única da verdade do tema. Ver ARCHITECTURE.md §3 e §4.1.
+# Tokens viram placeholders ${secao_chave} nos templates (ex.: base."100" -> ${base_100}).
+# Cores #RRGGBB ganham variantes: ${x_nohash}, ${x_rgb}, ${x_r}, ${x_g}, ${x_b}.
+# Valores no formato fn(...) são calculados pelo tooling (lighten, darken, mix).
+
+[theme]
+id = "gibi"
+name = "Gibi"
+
+[base]
+"140" = "#1C1712"
+"120" = "#26211C"
+"110" = "#2A241E"
+"100" = "#2E261F"
+"90" = "#342C23"
+"80" = "#3B3026"
+"70" = "#51402F"
+"60" = "#6B563D"
+"50" = "#917959"
+"40" = "#AB916D"
+"20" = "#D7C0A3"
+"10" = "#EBDAC6"
+
+[accent]
+primary = "#FFEA00"
+on_primary = "#1C1712"
+secondary = "#A58BC0"
+
+[selection]
+bg = "#5E4E5F"
+bg_subtle = "#4F424C"
+fg = "#EBDAC6"
+
+[sem]
+red = "#E4574E"
+orange = "#EEA359"
+yellow = "#F9CF51"
+green = "#64C271"
+cyan = "#5BAFB7"
+blue = "#639CC0"
+pink = "#E06C8A"
+
+# Variantes brilhantes da paleta ANSI (cores 8-15), derivadas das semânticas.
+[ansi]
+bright_black = "lighten(base.70, 0.10)"
+bright_red = "lighten(sem.red, 0.12)"
+bright_green = "lighten(sem.green, 0.12)"
+bright_yellow = "lighten(sem.yellow, 0.12)"
+bright_blue = "lighten(sem.blue, 0.12)"
+bright_magenta = "lighten(accent.secondary, 0.12)"
+bright_cyan = "lighten(sem.cyan, 0.12)"
+
+[shape]
+radius_s = 4
+radius_m = 7
+radius_l = 10
+border_width = 1
+border_color = "rgba(0,0,0,0.30)"
+
+[keycap]
+highlight = "rgba(255,255,255,0.10)"
+base_depth = 3
+base_color = "rgba(0,0,0,0.28)"
+drop = "0 2px 3px rgba(0,0,0,0.30)"
+disabled_opacity = 0.3
+
+[focus]
+ring_width = 2
+ring_opacity = 0.45
+
+[surface]
+float_opacity = 0.88
+blur = "low"
+# Força do efeito blur do KWin (escala 1..15). "low" = 3.
+blur_strength = 3
+
+[font]
+ui = "Inter"
+mono = "CaskaydiaCove Nerd Font"
+
+# Integração com o KDE. widget_style é o ÚNICO lugar que define o estilo de widgets:
+# a fase 2 troca "Klassy" por "kvantum" aqui e nada mais.
+[kde]
+widget_style = "Klassy"
+decoration_library = "org.kde.klassy"
+decoration_theme = "Klassy"
+icon_base = "Papirus-Dark"
+# Cor das pastas (qualquer cor do Papirus: brown, yellow, grey, ...).
+folder_color = "brown"

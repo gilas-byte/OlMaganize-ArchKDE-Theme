@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="32" viewBox="0 0 64 32">
+  <rect id="button-normal" x="0.5" y="0.5" width="63" height="28" rx="${shape_radius_m}" fill="${base_90}" stroke="${base_140}" stroke-opacity="0.30"/>
+  <rect id="button-base" x="1" y="26" width="62" height="${keycap_base_depth}" fill="${base_140}" fill-opacity="0.28"/>
+  <rect id="focus" x="0" y="0" width="64" height="32" rx="${shape_radius_m}" fill="none" stroke="${accent_primary}" stroke-width="${focus_ring_width}" stroke-opacity="${focus_ring_opacity}"/>
+</svg>
