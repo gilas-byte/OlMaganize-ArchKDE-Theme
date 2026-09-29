@@ -10,3 +10,6 @@ Theme=${icon_theme}
 [kwinrc][org.kde.kdecoration2]
 library=${kde_decoration_library}
 theme=${kde_decoration_theme}
+
+[plasmarc][Theme]
+name=${theme_name}

@@ -1,0 +1,24 @@
+name = "plasma-style"
+description = "Plasma Style: barras, popups e widgets do Plasma com efeito de tecla (fase 3)"
+order = 45
+packages = []
+aur_packages = []
+detect = "command -v plasma-apply-desktoptheme"
+
+# Gera templates/theme/ (SVGs, metadata.json, plasmarc) a partir da geometria da paleta.
+generate = "generate.py"
+
+[[files]]
+src = "templates/theme"
+dest = "~/.local/share/plasma/desktoptheme/${theme_name}"
+mode = "symlink"
+
+# O conteúdo muda sem o nome mudar: reaplica quando algum arquivo do alvo mudou, para o
+# plasmashell recarregar (a versão em metadata.json já invalida o cache de SVGs).
+[[states]]
+name = "Plasma Style"
+get = "kreadconfig6 --file plasmarc --group Theme --key name"
+set = "plasma-apply-desktoptheme \"$$GIBI_VALUE\""
+value = "${theme_name}"
+default = "default"
+reapply_on_change = true

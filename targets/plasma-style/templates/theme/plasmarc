@@ -1,0 +1,10 @@
+# Blur do KWin atrás de painéis e popups translúcidos; sem o efeito de contraste,
+# que puxaria as cores para longe da paleta.
+[ContrastEffect]
+enabled=false
+
+[BlurBehindEffect]
+enabled=true
+
+[AdaptiveTransparency]
+enabled=true

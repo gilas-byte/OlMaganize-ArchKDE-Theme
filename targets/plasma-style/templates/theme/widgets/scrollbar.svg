@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="32" viewBox="0 0 900 32">
+<!-- Gerado por targets/plasma-style/generate.py a partir de palette.toml. Não edite à mão. -->
+<g id="slider-topleft" transform="translate(10,10)"><rect width="3" height="3" fill="none"/><path d="M0,3 L0.147,2.073 L0.573,1.237 L1.237,0.573 L2.073,0.147 L3,0 L3,0 L3,3Z" fill="${base_70}" fill-opacity="1"/></g>
+<g id="slider-top" transform="translate(15,10)"><rect width="2" height="3" fill="none"/><path d="M0,3 L0,0 L2,0 L2,0 L2,3Z" fill="${base_70}" fill-opacity="1"/></g>
+<g id="slider-topright" transform="translate(19,10)"><rect width="3" height="3" fill="none"/><path d="M0,3 L0,0 L0.927,0.147 L1.763,0.573 L2.427,1.237 L2.853,2.073 L3,3 L3,3Z" fill="${base_70}" fill-opacity="1"/></g>
+<g id="slider-left" transform="translate(10,15)"><rect width="3" height="2" fill="none"/><path d="M0,0 L0,0 L3,0 L3,2 L0,2 L0,2Z" fill="${base_70}" fill-opacity="1"/></g>
+<g id="slider-center" transform="translate(15,15)"><rect width="2" height="2" fill="none"/><path d="M0,2 L0,0 L2,0 L2,2Z" fill="${base_70}" fill-opacity="1"/></g>
+<g id="slider-right" transform="translate(19,15)"><rect width="3" height="2" fill="none"/><path d="M0,2 L0,0 L3,0 L3,2 L3,2Z" fill="${base_70}" fill-opacity="1"/></g>
+<g id="slider-bottomleft" transform="translate(10,19)"><rect width="3" height="3" fill="none"/><path d="M0,0 L3,0 L3,3 L3,3 L2.073,2.853 L1.237,2.427 L0.573,1.763 L0.147,0.927 L0,0Z" fill="${base_70}" fill-opacity="1"/></g>
+<g id="slider-bottom" transform="translate(15,19)"><rect width="2" height="3" fill="none"/><path d="M0,0 L2,0 L2,3 L2,3 L0,3 L0,3Z" fill="${base_70}" fill-opacity="1"/></g>
+<g id="slider-bottomright" transform="translate(19,19)"><rect width="3" height="3" fill="none"/><path d="M0,0 L3,0 L3,0 L2.853,0.927 L2.427,1.763 L1.763,2.427 L0.927,2.853 L0,3 L0,3Z" fill="${base_70}" fill-opacity="1"/></g>
+<g id="slider-hint-left-inset" transform="translate(32,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="slider-hint-top-inset" transform="translate(48,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="slider-hint-right-inset" transform="translate(60,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="slider-hint-bottom-inset" transform="translate(76,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="mouseover-slider-topleft" transform="translate(88,10)"><rect width="3" height="3" fill="none"/><path d="M0,3 L0.147,2.073 L0.573,1.237 L1.237,0.573 L2.073,0.147 L3,0 L3,0 L3,3Z" fill="${base_60}" fill-opacity="1"/></g>
+<g id="mouseover-slider-top" transform="translate(93,10)"><rect width="2" height="3" fill="none"/><path d="M0,3 L0,0 L2,0 L2,0 L2,3Z" fill="${base_60}" fill-opacity="1"/></g>
+<g id="mouseover-slider-topright" transform="translate(97,10)"><rect width="3" height="3" fill="none"/><path d="M0,3 L0,0 L0.927,0.147 L1.763,0.573 L2.427,1.237 L2.853,2.073 L3,3 L3,3Z" fill="${base_60}" fill-opacity="1"/></g>
+<g id="mouseover-slider-left" transform="translate(88,15)"><rect width="3" height="2" fill="none"/><path d="M0,0 L0,0 L3,0 L3,2 L0,2 L0,2Z" fill="${base_60}" fill-opacity="1"/></g>
+<g id="mouseover-slider-center" transform="translate(93,15)"><rect width="2" height="2" fill="none"/><path d="M0,2 L0,0 L2,0 L2,2Z" fill="${base_60}" fill-opacity="1"/></g>
+<g id="mouseover-slider-right" transform="translate(97,15)"><rect width="3" height="2" fill="none"/><path d="M0,2 L0,0 L3,0 L3,2 L3,2Z" fill="${base_60}" fill-opacity="1"/></g>
+<g id="mouseover-slider-bottomleft" transform="translate(88,19)"><rect width="3" height="3" fill="none"/><path d="M0,0 L3,0 L3,3 L3,3 L2.073,2.853 L1.237,2.427 L0.573,1.763 L0.147,0.927 L0,0Z" fill="${base_60}" fill-opacity="1"/></g>
+<g id="mouseover-slider-bottom" transform="translate(93,19)"><rect width="2" height="3" fill="none"/><path d="M0,0 L2,0 L2,3 L2,3 L0,3 L0,3Z" fill="${base_60}" fill-opacity="1"/></g>
+<g id="mouseover-slider-bottomright" transform="translate(97,19)"><rect width="3" height="3" fill="none"/><path d="M0,0 L3,0 L3,0 L2.853,0.927 L2.427,1.763 L1.763,2.427 L0.927,2.853 L0,3 L0,3Z" fill="${base_60}" fill-opacity="1"/></g>
+<g id="mouseover-slider-hint-left-inset" transform="translate(110,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="mouseover-slider-hint-top-inset" transform="translate(126,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="mouseover-slider-hint-right-inset" transform="translate(138,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="mouseover-slider-hint-bottom-inset" transform="translate(154,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="background-horizontal-topleft" transform="translate(166,10)"><rect width="3" height="3" fill="none"/></g>
+<g id="background-horizontal-top" transform="translate(171,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="background-horizontal-topright" transform="translate(175,10)"><rect width="3" height="3" fill="none"/></g>
+<g id="background-horizontal-left" transform="translate(166,15)"><rect width="3" height="2" fill="none"/></g>
+<g id="background-horizontal-center" transform="translate(171,15)"><rect width="2" height="2" fill="none"/></g>
+<g id="background-horizontal-right" transform="translate(175,15)"><rect width="3" height="2" fill="none"/></g>
+<g id="background-horizontal-bottomleft" transform="translate(166,19)"><rect width="3" height="3" fill="none"/></g>
+<g id="background-horizontal-bottom" transform="translate(171,19)"><rect width="2" height="3" fill="none"/></g>
+<g id="background-horizontal-bottomright" transform="translate(175,19)"><rect width="3" height="3" fill="none"/></g>
+<g id="background-horizontal-hint-left-inset" transform="translate(188,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="background-horizontal-hint-top-inset" transform="translate(204,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="background-horizontal-hint-right-inset" transform="translate(216,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="background-horizontal-hint-bottom-inset" transform="translate(232,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="background-vertical-topleft" transform="translate(244,10)"><rect width="3" height="3" fill="none"/></g>
+<g id="background-vertical-top" transform="translate(249,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="background-vertical-topright" transform="translate(253,10)"><rect width="3" height="3" fill="none"/></g>
+<g id="background-vertical-left" transform="translate(244,15)"><rect width="3" height="2" fill="none"/></g>
+<g id="background-vertical-center" transform="translate(249,15)"><rect width="2" height="2" fill="none"/></g>
+<g id="background-vertical-right" transform="translate(253,15)"><rect width="3" height="2" fill="none"/></g>
+<g id="background-vertical-bottomleft" transform="translate(244,19)"><rect width="3" height="3" fill="none"/></g>
+<g id="background-vertical-bottom" transform="translate(249,19)"><rect width="2" height="3" fill="none"/></g>
+<g id="background-vertical-bottomright" transform="translate(253,19)"><rect width="3" height="3" fill="none"/></g>
+<g id="background-vertical-hint-left-inset" transform="translate(266,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="background-vertical-hint-top-inset" transform="translate(282,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="background-vertical-hint-right-inset" transform="translate(294,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="background-vertical-hint-bottom-inset" transform="translate(310,10)"><rect width="2" height="3" fill="none"/></g>
+<g id="hint-scrollbar-size" transform="translate(322,10)"><rect width="6" height="6" fill="none"/></g>
+</svg>

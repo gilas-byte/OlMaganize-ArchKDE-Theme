@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "${theme_name}"
+            }
+        ],
+        "Description": "Marrons quentes e teclas. Paleta do Primary for Obsidian (Cecilia May); estrutura do Breeze (KDE VDG, LGPL).",
+        "Id": "${theme_name}",
+        "License": "GPL-3.0-or-later",
+        "Name": "${theme_name}",
+        "Version": "1.1210654327"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

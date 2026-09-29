@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="52" viewBox="0 0 900 52">
+<!-- Gerado por targets/plasma-style/generate.py a partir de palette.toml. Não edite à mão. -->
+<g id="north-active-tab-topleft" transform="translate(10,10)"><rect width="4" height="4" fill="none"/></g>
+<g id="north-active-tab-top" transform="translate(16,10)"><rect width="20" height="4" fill="none"/></g>
+<g id="north-active-tab-topright" transform="translate(38,10)"><rect width="4" height="4" fill="none"/></g>
+<g id="north-active-tab-left" transform="translate(10,16)"><rect width="4" height="20" fill="none"/></g>
+<g id="north-active-tab-center" transform="translate(16,16)"><rect width="20" height="20" fill="none"/></g>
+<g id="north-active-tab-right" transform="translate(38,16)"><rect width="4" height="20" fill="none"/></g>
+<g id="north-active-tab-bottomleft" transform="translate(10,38)"><rect width="4" height="4" fill="none"/><path d="M0,2 L4,2 L4,4 L0,4Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="north-active-tab-bottom" transform="translate(16,38)"><rect width="20" height="4" fill="none"/><path d="M0,2 L20,2 L20,4 L0,4Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="north-active-tab-bottomright" transform="translate(38,38)"><rect width="4" height="4" fill="none"/><path d="M0,2 L4,2 L4,4 L0,4Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="north-active-tab-hint-left-margin" transform="translate(52,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="north-active-tab-hint-top-margin" transform="translate(68,10)"><rect width="2" height="10" fill="none"/></g>
+<g id="north-active-tab-hint-right-margin" transform="translate(80,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="north-active-tab-hint-bottom-margin" transform="translate(96,10)"><rect width="2" height="10" fill="none"/></g>
+<g id="south-active-tab-topleft" transform="translate(108,10)"><rect width="4" height="4" fill="none"/><path d="M0,0 L4,0 L4,2 L0,2Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="south-active-tab-top" transform="translate(114,10)"><rect width="20" height="4" fill="none"/><path d="M0,0 L20,0 L20,2 L0,2Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="south-active-tab-topright" transform="translate(136,10)"><rect width="4" height="4" fill="none"/><path d="M0,0 L4,0 L4,2 L0,2Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="south-active-tab-left" transform="translate(108,16)"><rect width="4" height="20" fill="none"/></g>
+<g id="south-active-tab-center" transform="translate(114,16)"><rect width="20" height="20" fill="none"/></g>
+<g id="south-active-tab-right" transform="translate(136,16)"><rect width="4" height="20" fill="none"/></g>
+<g id="south-active-tab-bottomleft" transform="translate(108,38)"><rect width="4" height="4" fill="none"/></g>
+<g id="south-active-tab-bottom" transform="translate(114,38)"><rect width="20" height="4" fill="none"/></g>
+<g id="south-active-tab-bottomright" transform="translate(136,38)"><rect width="4" height="4" fill="none"/></g>
+<g id="south-active-tab-hint-left-margin" transform="translate(150,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="south-active-tab-hint-top-margin" transform="translate(166,10)"><rect width="2" height="10" fill="none"/></g>
+<g id="south-active-tab-hint-right-margin" transform="translate(178,10)"><rect width="6" height="2" fill="none"/></g>
+<g id="south-active-tab-hint-bottom-margin" transform="translate(194,10)"><rect width="2" height="10" fill="none"/></g>
+<g id="west-active-tab-topleft" transform="translate(206,10)"><rect width="4" height="4" fill="none"/></g>
+<g id="west-active-tab-top" transform="translate(212,10)"><rect width="20" height="4" fill="none"/></g>
+<g id="west-active-tab-topright" transform="translate(234,10)"><rect width="4" height="4" fill="none"/><path d="M2,4 L2,0 L4,0 L4,4Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="west-active-tab-left" transform="translate(206,16)"><rect width="4" height="20" fill="none"/></g>
+<g id="west-active-tab-center" transform="translate(212,16)"><rect width="20" height="20" fill="none"/></g>
+<g id="west-active-tab-right" transform="translate(234,16)"><rect width="4" height="20" fill="none"/><path d="M2,20 L2,0 L4,0 L4,20Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="west-active-tab-bottomleft" transform="translate(206,38)"><rect width="4" height="4" fill="none"/></g>
+<g id="west-active-tab-bottom" transform="translate(212,38)"><rect width="20" height="4" fill="none"/></g>
+<g id="west-active-tab-bottomright" transform="translate(234,38)"><rect width="4" height="4" fill="none"/><path d="M2,0 L4,0 L4,4 L2,4Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="west-active-tab-hint-left-margin" transform="translate(248,10)"><rect width="4" height="2" fill="none"/></g>
+<g id="west-active-tab-hint-top-margin" transform="translate(262,10)"><rect width="2" height="6" fill="none"/></g>
+<g id="west-active-tab-hint-right-margin" transform="translate(274,10)"><rect width="8" height="2" fill="none"/></g>
+<g id="west-active-tab-hint-bottom-margin" transform="translate(292,10)"><rect width="2" height="6" fill="none"/></g>
+<g id="east-active-tab-topleft" transform="translate(304,10)"><rect width="4" height="4" fill="none"/><path d="M0,4 L0,0 L2,0 L2,4Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="east-active-tab-top" transform="translate(310,10)"><rect width="20" height="4" fill="none"/></g>
+<g id="east-active-tab-topright" transform="translate(332,10)"><rect width="4" height="4" fill="none"/></g>
+<g id="east-active-tab-left" transform="translate(304,16)"><rect width="4" height="20" fill="none"/><path d="M0,20 L0,0 L2,0 L2,20Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="east-active-tab-center" transform="translate(310,16)"><rect width="20" height="20" fill="none"/></g>
+<g id="east-active-tab-right" transform="translate(332,16)"><rect width="4" height="20" fill="none"/></g>
+<g id="east-active-tab-bottomleft" transform="translate(304,38)"><rect width="4" height="4" fill="none"/><path d="M0,0 L2,0 L2,4 L0,4Z" fill="${accent_primary}" fill-opacity="1"/></g>
+<g id="east-active-tab-bottom" transform="translate(310,38)"><rect width="20" height="4" fill="none"/></g>
+<g id="east-active-tab-bottomright" transform="translate(332,38)"><rect width="4" height="4" fill="none"/></g>
+<g id="east-active-tab-hint-left-margin" transform="translate(346,10)"><rect width="8" height="2" fill="none"/></g>
+<g id="east-active-tab-hint-top-margin" transform="translate(364,10)"><rect width="2" height="6" fill="none"/></g>
+<g id="east-active-tab-hint-right-margin" transform="translate(376,10)"><rect width="4" height="2" fill="none"/></g>
+<g id="east-active-tab-hint-bottom-margin" transform="translate(390,10)"><rect width="2" height="6" fill="none"/></g>
+</svg>

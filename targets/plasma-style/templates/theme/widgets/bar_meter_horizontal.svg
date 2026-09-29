@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="32" viewBox="0 0 900 32">
+<!-- Gerado por targets/plasma-style/generate.py a partir de palette.toml. Não edite à mão. -->
+<g id="bar-inactive-topleft" transform="translate(10,10)"><rect width="3" height="3" fill="none"/><path d="M0,3 L0.147,2.073 L0.573,1.237 L1.237,0.573 L2.073,0.147 L3,0 L3,0 L3,3Z" fill="${base_120}" fill-opacity="1"/></g>
+<g id="bar-inactive-top" transform="translate(15,10)"><rect width="2" height="3" fill="none"/><path d="M0,3 L0,0 L2,0 L2,0 L2,3Z" fill="${base_120}" fill-opacity="1"/></g>
+<g id="bar-inactive-topright" transform="translate(19,10)"><rect width="3" height="3" fill="none"/><path d="M0,3 L0,0 L0.927,0.147 L1.763,0.573 L2.427,1.237 L2.853,2.073 L3,3 L3,3Z" fill="${base_120}" fill-opacity="1"/></g>
+<g id="bar-inactive-left" transform="translate(10,15)"><rect width="3" height="2" fill="none"/><path d="M0,0 L0,0 L3,0 L3,2 L0,2 L0,2Z" fill="${base_120}" fill-opacity="1"/></g>
+<g id="bar-inactive-center" transform="translate(15,15)"><rect width="2" height="2" fill="none"/><path d="M0,2 L0,0 L2,0 L2,2Z" fill="${base_120}" fill-opacity="1"/></g>
+<g id="bar-inactive-right" transform="translate(19,15)"><rect width="3" height="2" fill="none"/><path d="M0,2 L0,0 L3,0 L3,2 L3,2Z" fill="${base_120}" fill-opacity="1"/></g>
+<g id="bar-inactive-bottomleft" transform="translate(10,19)"><rect width="3" height="3" fill="none"/><path d="M0,0 L3,0 L3,3 L3,3 L2.073,2.853 L1.237,2.427 L0.573,1.763 L0.147,0.927 L0,0Z" fill="${base_120}" fill-opacity="1"/></g>
+<g id="bar-inactive-bottom" transform="translate(15,19)"><rect width="2" height="3" fill="none"/><path d="M0,0 L2,0 L2,3 L2,3 L0,3 L0,3Z" fill="${base_120}" fill-opacity="1"/></g>
+<g id="bar-inactive-bottomright" transform="translate(19,19)"><rect width="3" height="3" fill="none"/><path d="M0,0 L3,0 L3,0 L2.853,0.927 L2.427,1.763 L1.763,2.427 L0.927,2.853 L0,3 L0,3Z" fill="${base_120}" fill-opacity="1"/></g>
+<g id="bar-active-topleft" transform="translate(32,10)"><rect width="3" height="3" fill="none"/><path d="M0,3 L0.147,2.073 L0.573,1.237 L1.237,0.573 L2.073,0.147 L3,0 L3,0 L3,3Z" fill="${accent_secondary}" fill-opacity="1"/></g>
+<g id="bar-active-top" transform="translate(37,10)"><rect width="2" height="3" fill="none"/><path d="M0,3 L0,0 L2,0 L2,0 L2,3Z" fill="${accent_secondary}" fill-opacity="1"/></g>
+<g id="bar-active-topright" transform="translate(41,10)"><rect width="3" height="3" fill="none"/><path d="M0,3 L0,0 L0.927,0.147 L1.763,0.573 L2.427,1.237 L2.853,2.073 L3,3 L3,3Z" fill="${accent_secondary}" fill-opacity="1"/></g>
+<g id="bar-active-left" transform="translate(32,15)"><rect width="3" height="2" fill="none"/><path d="M0,0 L0,0 L3,0 L3,2 L0,2 L0,2Z" fill="${accent_secondary}" fill-opacity="1"/></g>
+<g id="bar-active-center" transform="translate(37,15)"><rect width="2" height="2" fill="none"/><path d="M0,2 L0,0 L2,0 L2,2Z" fill="${accent_secondary}" fill-opacity="1"/></g>
+<g id="bar-active-right" transform="translate(41,15)"><rect width="3" height="2" fill="none"/><path d="M0,2 L0,0 L3,0 L3,2 L3,2Z" fill="${accent_secondary}" fill-opacity="1"/></g>
+<g id="bar-active-bottomleft" transform="translate(32,19)"><rect width="3" height="3" fill="none"/><path d="M0,0 L3,0 L3,3 L3,3 L2.073,2.853 L1.237,2.427 L0.573,1.763 L0.147,0.927 L0,0Z" fill="${accent_secondary}" fill-opacity="1"/></g>
+<g id="bar-active-bottom" transform="translate(37,19)"><rect width="2" height="3" fill="none"/><path d="M0,0 L2,0 L2,3 L2,3 L0,3 L0,3Z" fill="${accent_secondary}" fill-opacity="1"/></g>
+<g id="bar-active-bottomright" transform="translate(41,19)"><rect width="3" height="3" fill="none"/><path d="M0,0 L3,0 L3,0 L2.853,0.927 L2.427,1.763 L1.763,2.427 L0.927,2.853 L0,3 L0,3Z" fill="${accent_secondary}" fill-opacity="1"/></g>
+<g id="hint-bar-size" transform="translate(54,10)"><rect width="6" height="6" fill="none"/></g>
+</svg>
