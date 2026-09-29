@@ -4,6 +4,9 @@ from pathlib import Path
 
 HEX_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
 FN_RE = re.compile(r"^(lighten|darken|mix)\((.*)\)$")
+RGBA_RE = re.compile(r"rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)")
+# Sombra no formato CSS: "x y blur rgba(...)" (px opcional).
+SHADOW_RE = re.compile(r"^(-?\d+)(?:px)?\s+(-?\d+)(?:px)?\s+(\d+)(?:px)?\s+(rgba\(.*\))$")
 
 
 class PaletteError(Exception):
@@ -48,6 +51,43 @@ def _compute(raw, expr):
     raise PaletteError(f"expressão inválida: {expr}")
 
 
+def parse_rgba(value):
+    """(r, g, b, alpha) de "rgba(...)", ou None."""
+    m = RGBA_RE.fullmatch(value.strip())
+    if not m:
+        return None
+    r, g, b, a = m.groups()
+    return int(r), int(g), int(b), float(a)
+
+
+def parse_shadow(value):
+    """(x, y, blur, (r, g, b, alpha)) de "x y blur rgba(...)", ou None."""
+    m = SHADOW_RE.match(value.strip())
+    if not m or parse_rgba(m.group(4)) is None:
+        return None
+    return int(m.group(1)), int(m.group(2)), int(m.group(3)), parse_rgba(m.group(4))
+
+
+def _rgba_variants(name, value):
+    """SVG Tiny (QtSvg) não entende rgba(): cor e opacidade saem separadas.
+
+    rgba(...)          -> ${x_hex}, ${x_alpha}, ${x_rgb}
+    "x y blur rgba()"  -> o mesmo, mais ${x_x}, ${x_y}, ${x_blur}
+    """
+    out = {}
+    shadow = parse_shadow(value)
+    rgba = shadow[3] if shadow else parse_rgba(value)
+    if rgba is None:
+        return out
+    r, g, b, a = rgba
+    out[f"{name}_hex"] = rgb_to_hex((r, g, b))
+    out[f"{name}_alpha"] = f"{a:g}"
+    out[f"{name}_rgb"] = f"{r},{g},{b}"
+    if shadow:
+        out[f"{name}_x"], out[f"{name}_y"], out[f"{name}_blur"] = (str(v) for v in shadow[:3])
+    return out
+
+
 class Palette:
     def __init__(self, path):
         self.path = Path(path)
@@ -80,6 +120,8 @@ class Palette:
                     out[f"{name}_r"], out[f"{name}_g"], out[f"{name}_b"] = str(r), str(g), str(b)
                 elif isinstance(value, float) and 0 < value <= 1:
                     out[f"{name}_pct"] = str(round(value * 100))
+                elif isinstance(value, str):
+                    out.update(_rgba_variants(name, value))
         kde = self.raw["kde"]
         out["lnf_id"] = f"org.{self.id}.desktop"
         out["icon_theme"] = f"{self.name}-{kde['icon_base']}"

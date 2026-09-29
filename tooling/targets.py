@@ -122,6 +122,15 @@ class Runner:
     # --- render / detecção / dependências -------------------------------------------------
 
     def render(self, target):
+        # "generate": script que (re)escreve templates/ a partir da paleta antes do render
+        # (ex.: o SVG do Kvantum, cuja geometria depende de raios e profundidades).
+        # Deve ser determinístico e só gravar o que mudou.
+        generator = target.meta.get("generate")
+        if generator:
+            result = subprocess.run([sys.executable, str(target.dir / generator)], cwd=self.root,
+                                    capture_output=True, text=True)
+            if result.returncode != 0:
+                raise TargetError(f"generate falhou: {result.stderr.strip()}")
         templates = target.dir / "templates"
         if templates.is_dir():
             render_tree(templates, self.build / target.name, self.tokens)
@@ -217,7 +226,9 @@ class Runner:
         begin, end = blocks.markers(self.palette.id, spec.get("comment", "#"))
         current = dest.read_text() if dest.is_file() else ""
         new = blocks.upsert(current, built.read_text(), begin, end, spec.get("position", "bottom"))
-        if new == current:
+        # Só a quebra de linha final não conta: o gtkconfig do KDE reescreve o gtk.css sem
+        # ela ao aplicar o Look-and-Feel, e o bloco continua intacto.
+        if new.rstrip("\n") == current.rstrip("\n"):
             return False
         changes.append(f"bloco gerenciado em {dest}")
         if not self.dry_run:
