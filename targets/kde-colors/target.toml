@@ -1,0 +1,20 @@
+name = "kde-colors"
+description = "Esquema de cores do KDE (.colors)"
+order = 20
+packages = []
+aur_packages = []
+detect = "command -v plasma-apply-colorscheme"
+
+[[files]]
+src = "templates/scheme.colors"
+dest = "~/.local/share/color-schemes/${color_scheme}.colors"
+mode = "copy"
+
+[[states]]
+name = "esquema de cores"
+get = "kreadconfig6 --file kdeglobals --group General --key ColorScheme"
+set = "targets/kde-colors/apply-scheme.sh \"$$GIBI_VALUE\""
+value = "${color_scheme}"
+# Sem esquema anterior registrado, volta ao padrão do Plasma.
+default = "BreezeLight"
+reapply_on_change = true
