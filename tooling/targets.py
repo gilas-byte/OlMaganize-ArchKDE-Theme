@@ -77,6 +77,15 @@ def _same(a, b):
     return equal(cmp)
 
 
+def _missing_dirs(path):
+    missing = []
+    parent = Path(path).parent
+    while not parent.exists():
+        missing.append(str(parent))
+        parent = parent.parent
+    return missing
+
+
 def replace_font_family(current, family):
     if not current:
         return f"{family},10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
@@ -212,14 +221,16 @@ class Runner:
             return False
         changes.append(f"bloco gerenciado em {dest}")
         if not self.dry_run:
-            entry = {"kind": "block", "target": target.name, "path": str(dest), "markers": [begin, end]}
+            entry = {"kind": "block", "target": target.name, "path": str(dest), "markers": [begin, end],
+                     "created_dirs": _missing_dirs(dest)}
             self.session.record(entry, save_path=dest if exists else None)
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(new)
         return True
 
     def _record_file(self, target, dest, existed):
-        entry = {"kind": "file", "target": target.name, "path": str(dest), "existed": existed}
+        entry = {"kind": "file", "target": target.name, "path": str(dest), "existed": existed,
+                 "created_dirs": _missing_dirs(dest)}
         self.session.record(entry, save_path=dest if existed else None)
 
     def _key(self, target, spec, changes):

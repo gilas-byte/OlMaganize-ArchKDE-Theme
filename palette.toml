@@ -42,7 +42,6 @@ pink = "#E06C8A"
 
 # Variantes brilhantes da paleta ANSI (cores 8-15), derivadas das semânticas.
 [ansi]
-bright_black = "lighten(base.70, 0.10)"
 bright_red = "lighten(sem.red, 0.12)"
 bright_green = "lighten(sem.green, 0.12)"
 bright_yellow = "lighten(sem.yellow, 0.12)"
@@ -64,6 +63,12 @@ base_color = "rgba(0,0,0,0.28)"
 drop = "0 2px 3px rgba(0,0,0,0.30)"
 disabled_opacity = 0.3
 
+# Sombras genéricas (GTK/libadwaita: headerbar, cards, popovers, contorno da scrollbar).
+[shade]
+strong = "rgba(0,0,0,0.36)"
+soft = "rgba(0,0,0,0.25)"
+outline = "rgba(0,0,0,0.50)"
+
 [focus]
 ring_width = 2
 ring_opacity = 0.45
@@ -73,6 +78,11 @@ float_opacity = 0.88
 blur = "low"
 # Força do efeito blur do KWin (escala 1..15). "low" = 3.
 blur_strength = 3
+
+# Sombra das janelas (decoração Klassy): difusa, preta, força moderada (0..255).
+[window]
+shadow_color = "#000000"
+shadow_strength = 128
 
 [font]
 ui = "Inter"

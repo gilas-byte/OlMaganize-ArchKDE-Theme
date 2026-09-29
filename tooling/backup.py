@@ -142,6 +142,14 @@ def describe(entry):
 
 
 def _restore_entry(entry, bdir, cwd):
+    _restore_one(entry, bdir, cwd)
+    for d in entry.get("created_dirs", []):
+        d = Path(d)
+        if d.is_dir() and not any(d.iterdir()):
+            d.rmdir()
+
+
+def _restore_one(entry, bdir, cwd):
     kind = entry["kind"]
     saved = bdir / entry["saved"] if entry.get("saved") else None
     if kind == "file":

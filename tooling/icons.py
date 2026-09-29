@@ -32,6 +32,8 @@ def remove(name):
     path = theme_dir(name)
     if (path / MARKER).is_file():
         shutil.rmtree(path)
+        if not any(path.parent.iterdir()):
+            path.parent.rmdir()
 
 
 def build(name, base, color):
