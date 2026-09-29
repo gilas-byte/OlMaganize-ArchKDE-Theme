@@ -1,0 +1,44 @@
+name = "blur"
+description = "Blur leve do KWin, painel translúcido e menus translúcidos (Klassy)"
+order = 40
+packages = []
+aur_packages = []
+detect = "command -v qdbus6"
+
+# Blur só em superfícies flutuantes: o KWin só desfoca o que for translúcido,
+# e as janelas continuam opacas (nenhuma regra de transparência é criada).
+[[keys]]
+file = "kwinrc"
+group = "Plugins"
+key = "blurEnabled"
+value = true
+
+[[keys]]
+file = "kwinrc"
+group = "Effect-blur"
+key = "BlurStrength"
+value = "${surface_blur_strength}"
+
+[[keys]]
+file = "kwinrc"
+group = "Effect-blur"
+key = "NoiseStrength"
+value = 0
+
+# Menus e popups do estilo Klassy: opacidade = surface.float_opacity (o KWin aplica o blur).
+[[keys]]
+file = "klassy/klassyrc"
+group = "Style"
+key = "MenuOpacity"
+value = "${surface_float_opacity_pct}"
+
+# O nível exato de translucidez do painel vem do estilo do Plasma; aqui só liga o modo.
+[[states]]
+name = "opacidade dos painéis"
+get = "targets/blur/panel-opacity.sh get"
+set = "targets/blur/panel-opacity.sh set \"$$GIBI_VALUE\""
+value = "translucent"
+default = "adaptive"
+
+[[post]]
+cmd = "qdbus6 org.kde.KWin /KWin reconfigure"
