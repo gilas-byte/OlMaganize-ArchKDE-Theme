@@ -3,6 +3,8 @@
 > **Créditos:** a paleta e a sensação visual deste tema vêm do **[Primary for Obsidian](https://github.com/primary-theme/obsidian)**, de **Cecilia May**. Ele serviu de inspiração e é a fonte da paleta base. Nenhum código do Primary foi copiado, só os valores de cor.
 >
 > **Tema Kvantum:** baseado no **KvFlat**, de **Tsu Jan**, um dos temas que acompanham o [Kvantum](https://github.com/tsujan/Kvantum) (licença **GPL-3.0-or-later**). Do KvFlat vieram a estrutura do `.kvconfig` e o conjunto de elementos; o SVG foi redesenhado por `targets/kvantum/generate.py` para ter o efeito de tecla.
+>
+> **Plasma Style:** baseado no **Breeze** (tema `default` do Plasma, do **KDE Visual Design Group**, licença **LGPL**). Do Breeze vieram os nomes de arquivos, prefixos, elementos `hint-*` e margens; o desenho é refeito por `targets/plasma-style/generate.py`.
 
 Tema retro-moderno para **Arch Linux / CachyOS com KDE Plasma 6**: marrons quentes, texto bege de baixo contraste, sensação de revista antiga e um acento amarelo vivo usado com parcimônia. "Gibi" é um codinome provisório. O nome fica em um único lugar (`palette.toml → [theme]`), então renomear é trocar `id`/`name` lá e rodar `./install.sh` de novo.
 
@@ -14,7 +16,7 @@ git clone <repo> ~/Documents/gibi-theme && cd ~/Documents/gibi-theme
 ./install.sh                 # render + checagem de contraste + aplica todos os alvos detectados
 ```
 
-Depois do primeiro install, faça **logout/login** uma vez e siga `docs/CHECKLIST-FASE-1.md` e `docs/CHECKLIST-FASE-2.md`.
+Depois do primeiro install, faça **logout/login** uma vez e siga `docs/CHECKLIST-FASE-1.md`, `docs/CHECKLIST-FASE-2.md` e `docs/CHECKLIST-FASE-3.md`.
 
 ```sh
 ./install.sh --only ghostty  # só um alvo (ou vários: --only gtk,ghostty)
@@ -26,6 +28,8 @@ python3 -m tooling render    # só renderiza templates/ em build/
 tests/selftest.sh            # prova render, dry-run, idempotência, backup e restore em /tmp
 tests/kvantum-check.py       # alvo kvantum: sem hex solto, templates em dia, elementos completos
 tests/kvantum-preview.py     # fotografa os widgets com o tema Kvantum (offscreen) em build/
+tests/plasma-style-check.py  # alvo plasma-style: sem hex solto, templates em dia, nada faltando vs. Breeze
+tests/plasma-style-preview.py # barras, tarefas, popup e controles do Plasma com o KSvg real (offscreen)
 ```
 
 ### Garantias
@@ -47,7 +51,7 @@ tests/kvantum-preview.py     # fotografa os widgets com o tema Kvantum (offscree
 | `klassy` | **AUR** (nesta máquina: `klassy-bin`) | klassy |
 | `kvantum` (Qt6) | extra (nesta máquina: `kvantum-qt6-git`, que provê `kvantum`) | kvantum |
 | `kvantum-qt5` | extra; só se `qt5-base` estiver instalado | kvantum-qt5 |
-| `python-pyqt6` | extra; opcional | `tests/kvantum-preview.py` |
+| `python-pyqt6` | extra; opcional | `tests/kvantum-preview.py`, `tests/plasma-style-preview.py` |
 | `breeze-gtk` | extra | gtk |
 | `papirus-icon-theme` | extra | icons |
 | `ghostty` | extra (e cachyos-extra-v3) | ghostty |
@@ -66,6 +70,7 @@ Rodam nesta ordem. Cada alvo é uma pasta em `targets/` com um `target.toml` e `
 | `kvantum` | Tema Kvantum `Gibi` (widgets com efeito de tecla) em `~/.config/Kvantum/Gibi/`, `theme=Gibi` no `kvantum.kvconfig` e `widgetStyle` (fonte única em `palette.toml [kde].widget_style`). Menus e popups a 88% com blur. |
 | `kvantum-qt5` | Só garante o pacote `kvantum-qt5` quando há Qt5 no sistema (ex.: VLC 3). O tema é o mesmo. |
 | `blur` | Efeito blur do KWin com força baixa e painel em modo translúcido. Janelas continuam opacas. |
+| `plasma-style` | Plasma Style `Gibi` em `~/.local/share/plasma/desktoptheme/Gibi` + `plasma-apply-desktoptheme`: barras, tarefas com cara de tecla, popups, notificações, dicas e controles do Plasma. |
 | `gtk` | `gibi.css` (GTK3 e GTK4/libadwaita) importado no `gtk.css` por bloco gerenciado, e tema GTK3 Breeze. |
 | `ghostty` | Tema `gibi` com paleta ANSI + bloco gerenciado no `config.ghostty` (`theme` e `font-family`). |
 | `icons` | Tema de ícones `Gibi-Papirus-Dark`: herda o Papirus-Dark e troca só as pastas por marrons. |
@@ -111,6 +116,17 @@ Quando o tema mudar, clique em **Recarregar** no card da extensão. O tema do Br
 - **Menus:** translucidez (`surface.float_opacity`) e sombra vêm do SVG; `popup_blurring=true` pede ao KWin o blur atrás. A opção `MenuOpacity` do Klassy saiu do alvo `blur` (não tem mais efeito com o Kvantum desenhando os widgets).
 - **Preview sem mexer no sistema:** `python3 tests/kvantum-preview.py` renderiza os widgets offscreen em `build/kvantum-preview*.png`.
 
+### Plasma Style (fase 3)
+
+- Mesmo esquema do Kvantum: `targets/plasma-style/generate.py` escreve `templates/theme/` (SVGs, `metadata.json`, `plasmarc`) com as cores como `${token}`; o fatiamento e as camadas de tecla/campo moram em `tooling/svgslice.py`, compartilhado com o gerador do Kvantum. Os SVGs são `.svg` sem compressão (o KSvg do Plasma 6 carrega normalmente).
+- **Barras:** `base.100` a 0.88 com blur (0.88 exato agora, porque vem do nosso SVG), borda de 1px `base.70` no lado voltado para a tela; flutuante, borda nos 4 lados, cantos de 10px e sombra suave.
+- **Tarefas:** sem fundo em repouso; hover = tecla; janela ativa = tecla com face roxa-escura (`selection.bg_subtle`); janela pedindo atenção = tecla com borda e base amarelas (o único amarelo da barra); minimizada = plana e apagada; tarefas agrupadas ganham um selo roxo com "+".
+- **Popups, notificações, dicas:** iguais aos menus do Kvantum (`base.90` a 0.88, borda `base.70`, cantos de 10px, sombra em camadas); cabeçalho dos popups em `base.110` com linha fina.
+- **Controles do Plasma:** botão de tecla, campo afundado com anel amarelo no foco, checkbox/radio/switch ligados em roxo, slider e progresso com preenchimento roxo, aba ativa com linha amarela de 2px.
+- **Cache:** a versão em `metadata.json` leva um hash da paleta e dos templates, então o Plasma descarta o cache de SVGs sempre que o tema muda.
+- **Preview sem mexer no sistema:** `python3 tests/plasma-style-preview.py` usa o KSvg de verdade num ambiente temporário e grava `build/plasma-style-preview.png`.
+- O que o tema não desenha cai no Breeze, que segue o esquema `Gibi.colors` (ex.: calendário, relógio analógico, medidores, `busywidget`, `listitem`, `frame`, `toolbar`).
+
 ### Ghostty
 
 O Ghostty (>= 1.2) lê `~/.config/ghostty/config` e **depois** `config.ghostty`, e o último vence. Por isso o bloco gerenciado vai no `config.ghostty`, que é criado se não existir. O resto do arquivo não é tocado. Se você tiver `background-opacity` < 1, o terminal continua translúcido; o tema não mexe nisso.
@@ -123,7 +139,10 @@ O Ghostty (>= 1.2) lê `~/.config/ghostty/config` e **depois** `config.ghostty`,
 
 ## Limitações conhecidas
 
-- **Painel:** o alvo liga o modo translúcido, mas o nível exato de opacidade vem do Plasma Style em uso. Não dá para fixar 0.88 sem um Plasma Style próprio.
+- **Botões do Plasma com raio menor:** botões e campos dos popups do Plasma usam `radius_s` (4px) em vez de `radius_m`. O Plasma desenha a caixa do checkbox com o mesmo frame do botão, num quadrado de 16px, e com 7px de raio ela viraria um círculo igual ao radio. Botões dos apps (Kvantum) e tarefas da barra continuam com 7px.
+- **Tarefa ativa em roxo:** o plano pedia face `base.90` para a janela ativa, mas ela ficava indistinguível do hover (`base.80`). A janela ativa usa `selection.bg_subtle`.
+- **Plasmoides no desktop sem blur do papel de parede:** o Breeze tem um prefixo opcional `blurred` para isso; o Gibi não desenha, então widgets soltos no desktop usam o fundo translúcido comum.
+- **Sombras de barras e popups** são desenhadas pelo KWin a partir das peças `shadow-*`; o preview offscreen mostra as peças, mas não a composição real.
 - **Botão padrão (Kvantum):** o plano pedia face amarela com texto escuro. O Kvantum usa a mesma cor de texto para todos os botões (não existe cor de texto só para o botão padrão) e desenha o elemento `-default` por cima de qualquer estado, então o texto bege ficaria ilegível sobre o amarelo. O botão padrão é uma tecla normal com **borda e base inferior amarelas** e texto em negrito. Continua sendo o único botão com amarelo.
 - **Conteúdo do botão pressionado não desce 1px:** o deslocamento de conteúdo (`PM_ButtonShiftVertical`) está fixo em 0 no código do Kvantum (a opção existe comentada). A sensação de tecla apertada vem da face, que desce 1px e perde a base e a sombra.
 - **Apps QML/Kirigami** (boa parte das Configurações do Sistema, Discover, partes do Plasma) usam o `qqc2-desktop-style`, que só aproveita parte do estilo Qt. Neles o efeito de tecla aparece incompleto ou não aparece; as cores vêm do esquema `Gibi.colors` de qualquer jeito.
@@ -137,11 +156,11 @@ O Ghostty (>= 1.2) lê `~/.config/ghostty/config` e **depois** `config.ghostty`,
 palette.toml        fonte única: cores, forma, tipografia, nome, widget style
 install.sh          entrada fina → python3 -m tooling apply
 uninstall.sh        entrada fina → python3 -m tooling restore
-tooling/            Python stdlib: palette, render, contrast, targets, backup, blocks, kde, icons
+tooling/            Python stdlib: palette, render, contrast, targets, backup, blocks, kde, icons, svgslice
 targets/<alvo>/     target.toml + templates/ com placeholders ${token}
 build/              saída renderizada (ignorada pelo git)
-docs/               checklists visuais das fases 1 e 2, notas da fase 2, amostra ANSI
-tests/              selftest.sh (fundação, alvo _selftest), kvantum-check.py e kvantum-preview.py
+docs/               checklists visuais das fases 1, 2 e 3, notas da fase 2, amostra ANSI
+tests/              selftest.sh (fundação), kvantum-{check,preview}.py, plasma-style-{check,preview}.py
 ```
 
 Detalhes de contrato (`palette.toml`, templates, `target.toml`) em `ARCHITECTURE.md`. Além dos campos de lá, o `target.toml` aceita:
