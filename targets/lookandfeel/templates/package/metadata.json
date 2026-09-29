@@ -1,0 +1,17 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "${theme_name}"
+            }
+        ],
+        "Category": "",
+        "Description": "${theme_name}: marrons quentes, bege e amarelo pontual. Paleta base do Primary for Obsidian (Cecilia May).",
+        "Id": "${lnf_id}",
+        "License": "GPL-3.0-or-later",
+        "Name": "${theme_name}",
+        "Version": "1.0"
+    },
+    "X-Plasma-APIVersion": "2"
+}

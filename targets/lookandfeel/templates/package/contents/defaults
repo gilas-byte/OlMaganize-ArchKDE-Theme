@@ -1,0 +1,12 @@
+[kdeglobals][KDE]
+widgetStyle=${kde_widget_style}
+
+[kdeglobals][General]
+ColorScheme=${color_scheme}
+
+[kdeglobals][Icons]
+Theme=${icon_theme}
+
+[kwinrc][org.kde.kdecoration2]
+library=${kde_decoration_library}
+theme=${kde_decoration_theme}

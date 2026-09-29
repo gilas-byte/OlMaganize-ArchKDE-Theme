@@ -1,0 +1,22 @@
+name = "lookandfeel"
+description = "Pacote Look-and-Feel do Plasma (sem layout de painéis) — roda por último"
+order = 90
+packages = []
+aur_packages = []
+detect = "command -v plasma-apply-lookandfeel"
+
+[[files]]
+src = "templates/package"
+dest = "~/.local/share/plasma/look-and-feel/${lnf_id}"
+mode = "copy"
+
+# O restore só devolve o nome do pacote anterior: cada configuração que o pacote aplica
+# (cores, ícones, decoração, widget style) já é restaurada pelo seu próprio alvo, e
+# reaplicar o pacote antigo poderia sobrescrever essas restaurações.
+[[states]]
+name = "look-and-feel"
+get = "kreadconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage"
+set = "plasma-apply-lookandfeel -a \"$$GIBI_VALUE\""
+restore = "if [ -n \"$$GIBI_VALUE\" ]; then kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage \"$$GIBI_VALUE\"; else kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage --delete; fi"
+value = "${lnf_id}"
+reapply_on_change = true
