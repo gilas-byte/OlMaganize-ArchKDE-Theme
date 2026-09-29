@@ -21,14 +21,17 @@ name = "Gibi"
 "20" = "#D7C0A3"
 "10" = "#EBDAC6"
 
+# secondary: o amarelo "de conteúdo" do Primary (sem.yellow), mais suave que o primary.
+# Preenche checkbox, radio, switch, slider e progresso ligados; marca por cima em on_primary.
 [accent]
 primary = "#FFEA00"
 on_primary = "#1C1712"
-secondary = "#A58BC0"
+secondary = "#F9CF51"
 
+# Seleção marrom-dourada: sem.yellow misturado ao fundo base.100 (70% e 80% de fundo).
 [selection]
-bg = "#5E4E5F"
-bg_subtle = "#4F424C"
+bg = "mix(sem.yellow, base.100, 0.70)"
+bg_subtle = "mix(sem.yellow, base.100, 0.80)"
 fg = "#EBDAC6"
 
 [sem]
@@ -46,7 +49,7 @@ bright_red = "lighten(sem.red, 0.12)"
 bright_green = "lighten(sem.green, 0.12)"
 bright_yellow = "lighten(sem.yellow, 0.12)"
 bright_blue = "lighten(sem.blue, 0.12)"
-bright_magenta = "lighten(accent.secondary, 0.12)"
+bright_magenta = "lighten(sem.pink, 0.12)"
 bright_cyan = "lighten(sem.cyan, 0.12)"
 
 [shape]

@@ -165,7 +165,7 @@ text.focus.color=${base_10}
 text.press.color=${base_20}
 text.toggle.color=${base_20}
 
-; --- checkbox e radio (ligado = roxo, não amarelo) ---------------------------------------
+; --- checkbox e radio (ligado = amarelo de conteúdo, marca escura) ---------------------
 [RadioButton]
 inherits=PanelButtonCommand
 frame=false

@@ -154,31 +154,49 @@ def attention_key(w, h):
     ]
 
 
+INDICATOR = 2  # espessura da barrinha de "app aberto" nas tarefas
+
+
+def indicator(location, w, h, color):
+    """Barrinha de app aberto na borda da tarefa voltada para a tela (fora dos cantos)."""
+    t = INDICATOR
+    box = {"": (R_M, h - t, w - R_M, h), "north": (R_M, 0, w - R_M, t),
+           "west": (0, R_M, t, h - R_M - DROP_Y), "east": (w - t, R_M, w, h - R_M - DROP_Y)}
+    return [([rrect(*box[location], t / 2)], solid(color))]
+
+
 def tasks():
     sheet = Sheet(HEADER)
     w, h = master(KEY)
-    states = {
-        "normal": [],
-        "hover": KIT.keycap(w, h, KIT.hover),
-        # janela ativa: tecla com face roxa-escura; com base.90 ficava igual ao hover
-        "focus": KIT.keycap(w, h, solid("selection.bg_subtle")),
-        "attention": attention_key(w, h),
-        "minimized": KIT.keycap(w, h, solid("base.110", "0.6"), "disabled"),
-        "progress": [([rrect(0, 0, w, h - DROP_Y, R_M)], solid("accent.secondary", "0.35"))],
-    }
-    # sem prefixo = barra embaixo; north = em cima; west/east = laterais. A tecla é a mesma.
+    progress = [([rrect(0, 0, w, h - DROP_Y, R_M)], solid("accent.secondary", "0.35"))]
+    # sem prefixo = barra embaixo; north = em cima; west/east = laterais. A tecla é a mesma;
+    # a barrinha de app aberto fica do lado da tela.
     for location in ("", "north", "west", "east"):
+        states = {
+            # app aberto sem foco: sem fundo, só a barrinha (sem ela não dava para ver o que
+            # está aberto na barra só de ícones)
+            "normal": indicator(location, w, h, "base.50"),
+            "hover": KIT.keycap(w, h, KIT.hover) + indicator(location, w, h, "base.50"),
+            # janela ativa: tecla dourada (com base.90 ficava igual ao hover) e barrinha amarela
+            "focus": KIT.keycap(w, h, solid("selection.bg_subtle"))
+                     + indicator(location, w, h, "accent.secondary"),
+            "attention": attention_key(w, h),
+            "minimized": indicator(location, w, h, "base.60"),
+            "progress": progress,
+        }
         for state, layers in states.items():
             prefix = f"{location}-{state}" if location else state
             sheet.nine(plasma_names(prefix), w, h, KEY, layers)
             hints(sheet, prefix, (4,) * 4)
+    # esticar as bordas em vez de repetir em mosaico: a barrinha tem pontas arredondadas
+    sheet.simple("hint-stretch-borders", 5, 5)
     # selo de tarefas agrupadas (o Breeze usa o mesmo desenho nas 4 posições)
     n = 11
     for side in ("top", "bottom", "left", "right"):
         sheet.simple(f"group-expander-{side}", n, n,
                      [([circle(n / 2, n / 2, n / 2)], solid("accent.secondary")),
                       (ring((0, 0, n, n), BW, n / 2), KIT.border)],
-                     _stroke("M5.5,3 L5.5,8 M3,5.5 L8,5.5", "base.10", 1.5))
+                     _stroke("M5.5,3 L5.5,8 M3,5.5 L8,5.5", "accent.on_primary", 1.5))
     return sheet
 
 
@@ -298,7 +316,7 @@ def checkmarks():
     box = rrect(0, 0, n, bottom, R_S)
     sheet.simple("checkbox", n, n, [([box], solid("accent.secondary")),
                                     (ring((0, 0, n, bottom), BW, R_S), KIT.border)],
-                 _stroke("M4.5,7 L7,9.5 L11.5,4.5", "base.10"))
+                 _stroke("M4.5,7 L7,9.5 L11.5,4.5", "accent.on_primary"))
     dot = circle(n / 2, bottom / 2, 3)
     sheet.simple("radiobutton", n, n, [([dot], solid("accent.secondary"))])
     return sheet
@@ -312,12 +330,12 @@ def radiobutton():
     sheet.simple("normal", n, n, [([c], KIT.field_bg), (cring, EDGE)])
     sheet.simple("hover", n, n, [(cring, solid("base.50"))])
     sheet.simple("checked", n, n, [([c], solid("accent.secondary")), (cring, KIT.border),
-                                   ([circle(n / 2, n / 2, 3)], solid("base.10"))])
+                                   ([circle(n / 2, n / 2, 3)], solid("accent.on_primary"))])
     f = n + 2 * KIT.ring_width
     sheet.simple("focus", f, f, [(ring((0, 0, f, f), KIT.ring_width, f / 2), KIT.focus)])
     sheet.simple("shadow", n + 6, n + 6)
     sheet.simple("hint-size", n, n)
-    sheet.simple("symbol", 6, 6, [([circle(3, 3, 3)], solid("base.10"))])
+    sheet.simple("symbol", 6, 6, [([circle(3, 3, 3)], solid("accent.on_primary"))])
     return sheet
 
 

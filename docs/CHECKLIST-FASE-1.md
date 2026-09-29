@@ -6,7 +6,7 @@ O Claude Code não vê a tela. Depois de `./install.sh`, **faça logout/login um
 spectacle -b -f -n -o ~/gibi-check-<app>.png
 ```
 
-Regra de ouro (ARCHITECTURE.md §3.4): **nenhuma área maior que um botão pode ficar amarela** (`#FFEA00`). O amarelo só aparece em anel de foco, cursor do terminal e, no máximo, preenchimento de botão. Seleção é roxa-acinzentada (`#5E4E5F`), nunca amarela.
+Regra de ouro (ARCHITECTURE.md §3.4): **nenhuma área maior que um botão pode ficar amarela** (`#FFEA00`). O amarelo só aparece em anel de foco, cursor do terminal e, no máximo, preenchimento de botão. Seleção é marrom-dourada (`#6B592E`), nunca o amarelo vivo.
 
 ## Antes de tudo
 
@@ -18,7 +18,7 @@ Regra de ouro (ARCHITECTURE.md §3.4): **nenhuma área maior que um botão pode 
 - [ ] Fundo da janela e da lista marrom (`#2E261F`); painel lateral (Locais) um tom diferente.
 - [ ] Texto bege; itens do painel lateral em bege mais apagado.
 - [ ] Pastas marrons (ícones Papirus com pastas `brown`).
-- [ ] Selecionar um arquivo: fundo roxo-acinzentado, texto claro. **Não** amarelo.
+- [ ] Selecionar um arquivo: fundo marrom-dourado, texto claro. **Não** o amarelo vivo.
 - [ ] Passar o mouse sobre itens: hover discreto (marrom mais claro), **não** amarelo.
 - [ ] Barra de título com as cores do esquema, opaca, cantos arredondados e sombra difusa.
 - [ ] Fonte da interface é Inter.
@@ -30,24 +30,24 @@ Regra de ouro (ARCHITECTURE.md §3.4): **nenhuma área maior que um botão pode 
 - [ ] Estilo das aplicações > **Klassy**. Decorações de janela > **Klassy**.
 - [ ] Tema global (Look-and-Feel) > **Gibi** aparece na lista.
 - [ ] Navegar com **Tab** entre controles: o anel de foco aparece em amarelo, fino.
-- [ ] Botões, checkboxes e sliders: nenhum preenchimento grande amarelo. (Checkbox marcado e slider usam a cor de seleção, roxa.)
+- [ ] Botões, checkboxes e sliders: nenhum preenchimento grande amarelo. (Checkbox marcado e slider usam a cor de seleção, marrom-dourada.)
 
 ## Kate — `gibi-check-kate.png`
 
 - [ ] Editor com fundo marrom e texto bege (o esquema de cores do editor segue o do sistema, se estiver no padrão).
-- [ ] Selecionar texto: fundo roxo.
+- [ ] Selecionar texto: fundo marrom-dourado.
 - [ ] Menus (Arquivo, Editar…): fundo levemente translúcido, com blur atrás.
 
 ## App GTK3 (Meld ou Lutris) — `gibi-check-gtk3.png`
 
 - [ ] Tema Breeze-GTK com as cores do esquema: fundo marrom, texto bege.
-- [ ] Seleção roxa. Botões com cantos de ~7px.
+- [ ] Seleção marrom-dourada. Botões com cantos de ~7px.
 
 ## App libadwaita (GNOME Tweaks, ProtonPlus ou `zenity --info --text teste`) — `gibi-check-libadwaita.png`
 
 - [ ] Fundo da janela marrom, headerbar um tom diferente, cards levemente mais claros.
 - [ ] **Procure amarelo grande**: botões "suggested-action" (ex.: Aplicar/OK) ficam amarelos com texto escuro. Isso é tamanho de botão e está ok. Se alguma barra, aba inteira, linha de lista ou sidebar ficar amarela, anote o app e a área (vai virar override no `gtk4.css`).
-- [ ] Seleção de texto roxa.
+- [ ] Seleção de texto marrom-dourada.
 - [ ] Switches ligados ficam amarelos (pequeno, ok).
 
 ## Ghostty — `gibi-check-ghostty.png`
@@ -59,10 +59,10 @@ Abra um terminal novo (ou `ctrl+shift+,` para recarregar) e rode:
 ```
 
 - [ ] Fundo marrom, texto bege, cursor amarelo com caractere escuro por baixo.
-- [ ] Magenta (5 e 13) é o roxo `#A58BC0`, não rosa.
+- [ ] Magenta (5 e 13) é o rosa do Primary (`sem.pink`), não roxo.
 - [ ] Amarelo ANSI (3) é o amarelo "envelhecido" `#F9CF51`, diferente do cursor.
 - [ ] Fonte CaskaydiaCove Nerd Font; os ícones da última linha aparecem (não quadrados).
-- [ ] Selecionar texto: fundo roxo.
+- [ ] Selecionar texto: fundo marrom-dourado.
 - [ ] O Ghostty usa libadwaita: confira se a barra de abas/título **não** ficou amarela.
 - [ ] Observação: seu `config.ghostty` tem `background-opacity = 0.8`, o que deixa o terminal translúcido. O tema não mexe nisso. Se quiser a "janela de papel" opaca, apague essa linha.
 

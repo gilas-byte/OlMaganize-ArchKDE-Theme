@@ -6,6 +6,10 @@ import shutil
 from pathlib import Path
 
 MARKER = ".gibi-generated"
+# Versão do formato do tema gerado. Mudou o que build() escreve? Suba o número: current()
+# passa a responder "" para temas antigos e o alvo icons regenera no próximo install.
+# 2: copia FollowsColorScheme do tema base.
+FORMAT = "2"
 
 
 def _data_home():
@@ -24,8 +28,12 @@ def theme_dir(name):
 
 
 def current(name):
+    """Cor das pastas do tema gerado, ou "" se não existe ou foi gerado num formato antigo."""
     marker = theme_dir(name) / MARKER
-    return marker.read_text().strip() if marker.is_file() else ""
+    if not marker.is_file():
+        return ""
+    color, _, version = marker.read_text().strip().partition("\n")
+    return color if version.strip() == FORMAT else ""
 
 
 def remove(name):
@@ -71,6 +79,9 @@ def build(name, base, color):
         f"Name={name}",
         f"Comment={base} com pastas {color} (gerado pelo gibi)",
         f"Inherits={base},{theme.get('Inherits', 'hicolor')}",
+        # Sem esta flag o Plasma não recolore os ícones symbolic, e os do Papirus-Dark
+        # (os mesmos arquivos do Papirus claro, em #444444) aparecem quase pretos.
+        f"FollowsColorScheme={theme.get('FollowsColorScheme', 'false')}",
         "Directories=" + ",".join(d for d in used if "@" not in d),
         "ScaledDirectories=" + ",".join(d for d in used if "@" in d),
         "",
@@ -80,4 +91,4 @@ def build(name, base, color):
         lines += [f"{k}={v}" for k, v in index[d].items()]
         lines.append("")
     (out / "index.theme").write_text("\n".join(lines))
-    (out / MARKER).write_text(color + "\n")
+    (out / MARKER).write_text(f"{color}\n{FORMAT}\n")

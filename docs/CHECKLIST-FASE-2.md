@@ -27,7 +27,7 @@ Os 5 estados + o botão padrão:
 - [ ] **Normal:** tecla marrom com linha de brilho fina no topo, borda escura e uma base mais escura de ~3px embaixo, com sombrinha curta.
 - [ ] **Hover:** a face clareia um passo.
 - [ ] **Pressionado** (segure o clique): face mais escura, sem a base e sem a sombra, 1px mais baixa. O texto **não** desce (limitação do Kvantum, ver README).
-- [ ] **Marcado** (botão de alternar, ex.: botões de formatação na barra do Kate): face roxa-acinzentada, afundada.
+- [ ] **Marcado** (botão de alternar, ex.: botões de formatação na barra do Kate): face marrom-dourada, afundada.
 - [ ] **Desabilitado:** plano, sem base nem sombra, texto apagado.
 - [ ] **Botão padrão** num diálogo de confirmação (ex.: fechar o Kate com um documento não salvo, ou Dolphin > apagar arquivo): **borda e base amarelas**, texto bege em negrito. É o único botão com amarelo na tela.
 
@@ -40,11 +40,11 @@ Os 5 estados + o botão padrão:
 
 ## Dolphin — `gibi-check-dolphin.png`
 
-- [ ] Arquivo selecionado: fundo roxo-acinzentado com borda interna e uma base um pouco mais escura embaixo (como a sidebar do Obsidian Primary). **Não** amarelo.
+- [ ] Arquivo selecionado: fundo marrom-dourado com borda interna e uma base um pouco mais escura embaixo (como a sidebar do Obsidian Primary). **Não** amarelo.
 - [ ] Hover em itens: marrom um pouco mais claro.
 - [ ] Barra de ferramentas: botões sem fundo; no hover aparecem como tecla.
 - [ ] Barra de rolagem fina (pílula marrom), sem trilho visível; mais clara no hover.
-- [ ] Menu de contexto (botão direito): fundo levemente translúcido, blur atrás, cantos arredondados, sombra suave; item em hover com fundo roxo escuro.
+- [ ] Menu de contexto (botão direito): fundo levemente translúcido, blur atrás, cantos arredondados, sombra suave; item em hover com fundo marrom-dourado escuro.
 - [ ] Tooltip (pare o mouse sobre um botão da barra): fundo quase preto, texto bege, borda fina.
 - [ ] Nenhuma área grande amarela.
 
@@ -52,8 +52,8 @@ Os 5 estados + o botão padrão:
 
 - [ ] Campo de texto: afundado (mais escuro que a janela), borda interna, linha escura fina no topo, **sem** base de tecla.
 - [ ] Combo (lista suspensa): mesmo visual de campo, seta fina à direita.
-- [ ] Checkbox desligado: quadradinho escuro com borda; **ligado: roxo com ✓ claro** (não amarelo).
-- [ ] Radio ligado: círculo roxo com ponto claro.
+- [ ] Checkbox desligado: quadradinho escuro com borda; **ligado: amarelo suave com ✓ escuro**.
+- [ ] Radio ligado: círculo amarelo suave com ponto escuro.
 - [ ] Spinbox: setinhas finas dentro do campo.
 
 ## Abas — Kate (várias abas abertas) ou Configurações do Dolphin — `gibi-check-abas.png`
@@ -64,8 +64,8 @@ Os 5 estados + o botão padrão:
 
 ## Slider e progresso — `gibi-check-slider.png`
 
-- [ ] Slider (ex.: zoom na barra de status do Dolphin, ou volume no VLC): trilho escuro fino, parte preenchida roxa, alça redonda pequena com efeito de tecla.
-- [ ] Barra de progresso (ex.: espaço livre na barra de status do Dolphin, ou copiando um arquivo grande): trilho escuro, preenchimento roxo, texto escuro legível sobre o roxo.
+- [ ] Slider (ex.: zoom na barra de status do Dolphin, ou volume no VLC): trilho escuro fino, parte preenchida em amarelo suave, alça redonda pequena com efeito de tecla.
+- [ ] Barra de progresso (ex.: espaço livre na barra de status do Dolphin, ou copiando um arquivo grande): trilho escuro, preenchimento amarelo suave, texto escuro legível sobre ele.
 
 ## Listas, árvores e cabeçalhos — Kate (painel de documentos/sistema de arquivos) — `gibi-check-listas.png`
 
@@ -82,7 +82,7 @@ Os 5 estados + o botão padrão:
 Esta máquina tem Qt5 (`vlc-gui-qt`). Sem o plugin Qt5, o VLC ignora o Kvantum.
 
 - [ ] Instale o plugin: `./install.sh --only kvantum-qt5` num terminal (pede confirmação e `sudo pacman -S kvantum-qt5`).
-- [ ] Abra o VLC: botões de tecla, slider de volume/posição roxo, menus translúcidos.
+- [ ] Abra o VLC: botões de tecla, slider de volume/posição amarelo, menus translúcidos.
 
 ## Se algo sair errado
 

@@ -15,3 +15,5 @@ Depois de atualizações do tema, clique em "Recarregar" no card da extensão.""
 src = "templates/brave-theme"
 dest = "~/.local/share/${theme_id}/brave-theme"
 mode = "copy"
+# O Brave grava o tema compilado dentro da pasta da extensão; não é mudança nossa.
+ignore = ["Cached Theme.pak"]

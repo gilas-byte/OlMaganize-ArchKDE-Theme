@@ -53,9 +53,9 @@ Os scripts bash são finos: checam pré-requisitos e chamam `python3 -m tooling 
 |---|---|---|
 | `accent.primary` | `#FFEA00` | **ação / foco**: botão principal, aba ativa, anel de foco, cursor do terminal |
 | `accent.on_primary` | `#1C1712` | texto/ícone sobre o amarelo (sempre) |
-| `accent.secondary` | `#A58BC0` | **seleção / referência**: texto selecionado, tags, links visitados, ANSI magenta |
-| `selection.bg` | `#5E4E5F` | fundo sólido de seleção (roxo a ~40% sobre `base.100`) |
-| `selection.bg_subtle` | `#4F424C` | seleção inativa / hover de seleção (~28%) |
+| `accent.secondary` | `#F9CF51` | **ligado / referência**: o amarelo "de conteúdo" do Primary (= `sem.yellow`). Preenche checkbox, radio, switch, slider e progresso ligados (marca por cima em `accent.on_primary`) e links visitados |
+| `selection.bg` | `#6B592E` | fundo sólido de seleção, marrom-dourado: `mix(sem.yellow, base.100, 0.70)` |
+| `selection.bg_subtle` | `#574829` | seleção inativa, janela ativa na barra: `mix(sem.yellow, base.100, 0.80)` |
 | `selection.fg` | `#EBDAC6` | texto sobre seleção |
 
 ### 3.3 Semânticas e ANSI (cores primárias "envelhecidas" do Primary dark)
@@ -76,8 +76,8 @@ Uso: erro = red, aviso = orange, sucesso = green, informação = blue. O `sem.ye
 
 1. **Amarelo `#FFEA00` nunca vira fundo de área maior que um botão.** Nada de barras, painéis ou abas inteiras amarelas. Ele é pontual: borda, anel, preenchimento de botão principal, cursor.
 2. Texto sobre amarelo é sempre `accent.on_primary`.
-3. Roxo é tempero (~5% da tela). Só nos papéis listados em 3.2.
-4. Hierarquia visual: marrons ~60%, bege (texto) ~30%, amarelo ~5-10%, roxo ~5%.
+3. Sem roxo: tudo gira em torno dos marrons e do amarelo do Primary. O amarelo suave (`accent.secondary`) só preenche controles ligados; o vivo (`accent.primary`) segue a regra 1. O magenta do terminal (ANSI 5/13) usa `sem.pink`, para a saída colorida manter o sentido.
+4. Hierarquia visual: marrons ~60%, bege (texto) ~30%, amarelos (vivo + suave + seleção dourada) ~10%.
 5. Todo par texto/fundo de texto corrido deve passar **WCAG AA (4.5:1)**, exceto os tokens explicitamente "apagados" (`base.50`, `base.60`), que só precisam de 3:1. O renderizador verifica isso (ver 5.3).
 
 ### 3.5 Tokens de forma (usados no GTK e principalmente na fase 2)
@@ -143,11 +143,11 @@ name = "Gibi"        # nome exibido
 [accent]
 primary = "#FFEA00"
 on_primary = "#1C1712"
-secondary = "#A58BC0"
+secondary = "#F9CF51"
 
 [selection]
-bg = "#5E4E5F"
-bg_subtle = "#4F424C"
+bg = "mix(sem.yellow, base.100, 0.70)"
+bg_subtle = "mix(sem.yellow, base.100, 0.80)"
 fg = "#EBDAC6"
 
 [sem]

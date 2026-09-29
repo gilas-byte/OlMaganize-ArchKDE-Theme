@@ -35,6 +35,7 @@ tests/plasma-style-preview.py # barras, tarefas, popup e controles do Plasma com
 ### Garantias
 
 - **Idempotente:** rodar `./install.sh` duas vezes seguidas não muda nada na segunda (nem cria backup novo).
+- **Mudou só a paleta?** Alvos que usam symlink para `build/` não veem o link mudar, então o instalador guarda um hash do conteúdo aplicado em `~/.local/state/gibi/rendered/`. Se o render mudou, o alvo conta como alterado: roda os `post` (ex.: o Kvantum avisa os apps) e o `reapply_on_change` (ex.: o Plasma Style passa um instante pelo Breeze para recarregar, porque o `plasma-apply-desktoptheme` não reaplica o tema ativo).
 - **Backup antes de tocar:** qualquer arquivo existente e o valor antigo de cada chave do KDE vão para `~/.local/state/gibi/backups/<timestamp>/manifest.json`. O `uninstall` restaura, para cada item, o backup mais antigo ainda não restaurado, ou seja, o estado de antes do tema. Se antes não havia nada, volta ao padrão do Plasma (Breeze).
 - **Sem sudo para o tema:** tudo vai para `~`. `sudo` só aparece no `pacman -S` de dependências que faltam, e sempre com confirmação.
 - **Arquivos que o KDE reescreve** (`kdeglobals`, `kwinrc`, `klassyrc`…) só são alterados chave a chave, com `kwriteconfig6`. Nunca por symlink.
@@ -106,7 +107,7 @@ Quando o tema mudar, clique em **Recarregar** no card da extensão. O tema do Br
 
 - O `~/.config/gtk-3.0/colors.css` é gerado pelo KDE a partir do esquema de cores e **não** é tocado. O `gtk.css` recebe só um `@import 'gibi.css';` entre marcadores `/* >>> gibi >>> */`, logo depois dos `@import` existentes.
 - Temas GTK3 como o Orchis compilam as cores no CSS e ignoram `@define-color`. Por isso o alvo troca o tema GTK3 para **Breeze** (via `kded6 gtkconfig`), que lê as cores do esquema do KDE. O tema anterior vai para o backup e volta no `uninstall`.
-- No libadwaita, `accent_bg_color` é o amarelo. Botões "suggested-action" e switches ligados ficam amarelos (tamanho de botão, ok pela regra). A seleção de texto foi forçada para o roxo.
+- No libadwaita, `accent_bg_color` é o amarelo. Botões "suggested-action" e switches ligados ficam amarelos (tamanho de botão, ok pela regra). A seleção de texto foi forçada para o marrom-dourado da seleção.
 
 ### Kvantum (fase 2)
 
@@ -120,9 +121,9 @@ Quando o tema mudar, clique em **Recarregar** no card da extensão. O tema do Br
 
 - Mesmo esquema do Kvantum: `targets/plasma-style/generate.py` escreve `templates/theme/` (SVGs, `metadata.json`, `plasmarc`) com as cores como `${token}`; o fatiamento e as camadas de tecla/campo moram em `tooling/svgslice.py`, compartilhado com o gerador do Kvantum. Os SVGs são `.svg` sem compressão (o KSvg do Plasma 6 carrega normalmente).
 - **Barras:** `base.100` a 0.88 com blur (0.88 exato agora, porque vem do nosso SVG), borda de 1px `base.70` no lado voltado para a tela; flutuante, borda nos 4 lados, cantos de 10px e sombra suave.
-- **Tarefas:** sem fundo em repouso; hover = tecla; janela ativa = tecla com face roxa-escura (`selection.bg_subtle`); janela pedindo atenção = tecla com borda e base amarelas (o único amarelo da barra); minimizada = plana e apagada; tarefas agrupadas ganham um selo roxo com "+".
+- **Tarefas:** app aberto sem foco = só uma barrinha bege na borda voltada para a tela (apagada se minimizado); hover = tecla; janela ativa = tecla com face marrom-dourada (`selection.bg_subtle`) e barrinha amarela; janela pedindo atenção = tecla com borda e base amarelas (o único amarelo da barra); tarefas agrupadas ganham um selo amarelo com "+".
 - **Popups, notificações, dicas:** iguais aos menus do Kvantum (`base.90` a 0.88, borda `base.70`, cantos de 10px, sombra em camadas); cabeçalho dos popups em `base.110` com linha fina.
-- **Controles do Plasma:** botão de tecla, campo afundado com anel amarelo no foco, checkbox/radio/switch ligados em roxo, slider e progresso com preenchimento roxo, aba ativa com linha amarela de 2px.
+- **Controles do Plasma:** botão de tecla, campo afundado com anel amarelo no foco, checkbox/radio/switch ligados em amarelo suave (`accent.secondary`), slider e progresso preenchidos com ele, aba ativa com linha amarela de 2px.
 - **Cache:** a versão em `metadata.json` leva um hash da paleta e dos templates, então o Plasma descarta o cache de SVGs sempre que o tema muda.
 - **Preview sem mexer no sistema:** `python3 tests/plasma-style-preview.py` usa o KSvg de verdade num ambiente temporário e grava `build/plasma-style-preview.png`.
 - O que o tema não desenha cai no Breeze, que segue o esquema `Gibi.colors` (ex.: calendário, relógio analógico, medidores, `busywidget`, `listitem`, `frame`, `toolbar`).
@@ -133,14 +134,14 @@ O Ghostty (>= 1.2) lê `~/.config/ghostty/config` e **depois** `config.ghostty`,
 
 ## Regras de cor e onde o amarelo aparece
 
-- `DecorationFocus = accent.primary` no esquema do KDE. No Klassy/Breeze e no Kirigami ele desenha **anéis e bordas de foco**, não preenchimentos. Checkbox marcado, slider e barra de progresso usam `Highlight` (seleção, roxo). Hover usa `DecorationHover = base.70`, então nenhum hover grande fica amarelo.
+- `DecorationFocus = accent.primary` no esquema do KDE. No Klassy/Breeze e no Kirigami ele desenha **anéis e bordas de foco**, não preenchimentos. Checkbox marcado, slider e barra de progresso usam `Highlight` (seleção, marrom-dourada) no Breeze/Klassy e o amarelo suave (`accent.secondary`) no Kvantum e no Plasma Style. Hover usa `DecorationHover = base.70`, então nenhum hover grande fica amarelo.
 - Brave: sem amarelo. Ghostty: amarelo só no cursor.
 - `python3 -m tooling check` falha o install se um par obrigatório da §5.3 ficar abaixo de 4.5:1. Aviso conhecido: `base.60` (texto desabilitado) sobre `base.100` dá 2.14:1, abaixo dos 3:1 pedidos para tokens "apagados". Não é par obrigatório e o WCAG isenta texto desabilitado, por isso é só aviso.
 
 ## Limitações conhecidas
 
 - **Botões do Plasma com raio menor:** botões e campos dos popups do Plasma usam `radius_s` (4px) em vez de `radius_m`. O Plasma desenha a caixa do checkbox com o mesmo frame do botão, num quadrado de 16px, e com 7px de raio ela viraria um círculo igual ao radio. Botões dos apps (Kvantum) e tarefas da barra continuam com 7px.
-- **Tarefa ativa em roxo:** o plano pedia face `base.90` para a janela ativa, mas ela ficava indistinguível do hover (`base.80`). A janela ativa usa `selection.bg_subtle`.
+- **Tarefa ativa na cor da seleção:** o plano pedia face `base.90` para a janela ativa, mas ela ficava indistinguível do hover (`base.80`). A janela ativa usa `selection.bg_subtle`.
 - **Plasmoides no desktop sem blur do papel de parede:** o Breeze tem um prefixo opcional `blurred` para isso; o Gibi não desenha, então widgets soltos no desktop usam o fundo translúcido comum.
 - **Sombras de barras e popups** são desenhadas pelo KWin a partir das peças `shadow-*`; o preview offscreen mostra as peças, mas não a composição real.
 - **Botão padrão (Kvantum):** o plano pedia face amarela com texto escuro. O Kvantum usa a mesma cor de texto para todos os botões (não existe cor de texto só para o botão padrão) e desenha o elemento `-default` por cima de qualquer estado, então o texto bege ficaria ilegível sobre o amarelo. O botão padrão é uma tecla normal com **borda e base inferior amarelas** e texto em negrito. Continua sendo o único botão com amarelo.
@@ -168,6 +169,7 @@ Detalhes de contrato (`palette.toml`, templates, `target.toml`) em `ARCHITECTURE
 - `[[keys]]`: `file`, `group` (string ou lista para grupos aninhados), `key`, `value` | `delete = true` | `transform = "font-family"`;
 - `[[states]]`: algo com comando de leitura e escrita. `get`, `set`, `restore` (opcional), `value`, `default` (usado no restore quando não havia valor) e `reapply_on_change`. O valor chega aos comandos em `$GIBI_VALUE`; escreva `$$GIBI_VALUE` no TOML, porque `$` sozinho é placeholder;
 - `[[files]]` em `managed-block`: `comment` (`#`, `//`, `/*`, `;`) e `position` (`bottom`, `top`, `after-imports`);
+- `[[files]]` em `copy`: `ignore`, lista de nomes que o próprio app cria no destino e que não contam como diferença (ex.: o `Cached Theme.pak` que o Brave grava na pasta do tema);
 - `order` (ordem de execução) e `message` (texto mostrado quando o alvo muda algo);
 - `generate`: script Python (relativo ao alvo) que roda antes do render e (re)escreve `templates/` a partir da paleta. Deve ser determinístico e só gravar o que mudou.
 

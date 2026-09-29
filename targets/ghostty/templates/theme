@@ -11,7 +11,7 @@ palette = 1=${sem_red}
 palette = 2=${sem_green}
 palette = 3=${sem_yellow}
 palette = 4=${sem_blue}
-palette = 5=${accent_secondary}
+palette = 5=${sem_pink}
 palette = 6=${sem_cyan}
 palette = 7=${base_20}
 palette = 8=${base_70}

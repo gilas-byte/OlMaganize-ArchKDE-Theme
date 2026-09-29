@@ -20,3 +20,8 @@ get = "kreadconfig6 --file kdeglobals --group Icons --key Theme"
 set = "/usr/lib/plasma-changeicons \"$$GIBI_VALUE\""
 value = "${icon_theme}"
 default = "breeze"
+
+# Regenerar o tema com o mesmo nome não troca o tema ativo: avisa os apps e o
+# plasmashell para recarregarem os ícones (o mesmo sinal que as Configurações mandam).
+[[post]]
+cmd = "dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged int32:0"

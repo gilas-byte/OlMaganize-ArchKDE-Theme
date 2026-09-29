@@ -1,4 +1,5 @@
 import filecmp
+import hashlib
 import os
 import shutil
 import subprocess
@@ -7,7 +8,7 @@ import tomllib
 from pathlib import Path
 
 from . import blocks, kde
-from .backup import BackupSession, copy_path, remove_path
+from .backup import BackupSession, copy_path, remove_path, state_dir
 from .render import RenderError, render_text, render_tree
 
 MODES = ("symlink", "copy", "managed-block")
@@ -60,13 +61,14 @@ def aur_helper():
     return next((h for h in ("paru", "yay") if shutil.which(h)), None)
 
 
-def _same(a, b):
+def _same(a, b, ignore=()):
+    """Conteúdo igual? `ignore`: nomes que o app cria no destino e não contam."""
     a, b = Path(a), Path(b)
     if b.is_symlink() or not b.exists():
         return False
     if a.is_file():
         return b.is_file() and filecmp.cmp(a, b, shallow=False)
-    cmp = filecmp.dircmp(a, b)
+    cmp = filecmp.dircmp(a, b, ignore=filecmp.DEFAULT_IGNORES + list(ignore))
 
     def equal(c):
         if c.left_only or c.right_only or c.funny_files:
@@ -170,13 +172,43 @@ class Runner:
 
     # --- aplicação ------------------------------------------------------------------------
 
+    # --- conteúdo renderizado ------------------------------------------------------------
+    # Um symlink para build/ não muda quando só o conteúdo renderizado muda (ex.: nova cor na
+    # paleta). Para os posts e o reapply_on_change enxergarem isso, guardamos o hash do
+    # build/<alvo> aplicado em ~/.local/state/<id>/rendered/.
+
+    def _fingerprint_path(self, target):
+        return state_dir(self.palette.id) / "rendered" / f"{target.name}.sha256"
+
+    def _fingerprint(self, target):
+        root = self.build / target.name
+        if not root.is_dir():
+            return None
+        digest = hashlib.sha256()
+        for path in sorted(p for p in root.rglob("*") if p.is_file()):
+            digest.update(path.relative_to(root).as_posix().encode() + b"\0" + path.read_bytes())
+        return digest.hexdigest()
+
+    def _render_changed(self, target):
+        """Hash atual se o conteúdo mudou desde o último apply de um alvo com symlink, senão None."""
+        if not any(spec.get("mode", "symlink") == "symlink" for spec in target.meta.get("files", [])):
+            return None
+        current = self._fingerprint(target)
+        path = self._fingerprint_path(target)
+        stored = path.read_text().strip() if path.is_file() else None
+        return current if current and current != stored else None
+
     def apply(self, target):
         """Aplica um alvo. Retorna a lista de mudanças (descrições)."""
         changes = []
         files_changed = False
+        rendered = self._render_changed(target)
         for spec in target.meta.get("files", []):
             if self._file(target, spec, changes):
                 files_changed = True
+        if rendered and not files_changed:
+            changes.append(f"conteúdo renderizado atualizado (build/{target.name})")
+            files_changed = True
         for spec in target.meta.get("keys", []):
             self._key(target, spec, changes)
         for spec in target.meta.get("states", []):
@@ -187,6 +219,10 @@ class Runner:
                 changes.append(f"executar: {cmd}")
                 if not self.dry_run:
                     self.sh(cmd)
+        if rendered and not self.dry_run:
+            path = self._fingerprint_path(target)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(rendered + "\n")
         return changes
 
     def _file(self, target, spec, changes):
@@ -214,7 +250,7 @@ class Runner:
             return True
 
         if mode == "copy":
-            if _same(built, dest):
+            if _same(built, dest, spec.get("ignore", [])):
                 return False
             changes.append(f"copiar {built} -> {dest}")
             if not self.dry_run:

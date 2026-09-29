@@ -252,8 +252,8 @@ def headers(sheet):
 
 def checks(sheet):
     n = HANDLE
-    mark = _stroke("M4,8.5 L7,11.5 L12.5,5", "base.10", 2)
-    dash = _stroke("M4.5,8 L11.5,8", "base.10", 2)
+    mark = _stroke("M4,8.5 L7,11.5 L12.5,5", "accent.on_primary", 2)
+    dash = _stroke("M4.5,8 L11.5,8", "accent.on_primary", 2)
     box = rrect(0, 0, n, n, R_S)
     boxring = ring((0, 0, n, n), BW, R_S)
     lift = ([box], Paint("${keycap_highlight_hex}", "${keycap_highlight_alpha}"))
@@ -275,7 +275,7 @@ def checks(sheet):
 
     c = circle(n / 2, n / 2, n / 2)
     cring = [c, circle(n / 2, n / 2, n / 2 - BW)]
-    dot = ([circle(n / 2, n / 2, 3)], solid("base.10"))
+    dot = ([circle(n / 2, n / 2, 3)], solid("accent.on_primary"))
     roff = {
         "normal": [([c], FIELD), (cring, solid("base.70"))],
         "focused": [([c], SUNK), (cring, solid("base.50"))],

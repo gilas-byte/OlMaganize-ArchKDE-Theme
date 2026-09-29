@@ -21,6 +21,8 @@ ADVISORY = [
     ("base.50", "base.100", FAINT),
     ("base.60", "base.100", FAINT),
     ("selection.fg", "selection.bg_subtle", AA),
+    # marca do checkbox/radio sobre o preenchimento amarelo de conteúdo
+    ("accent.on_primary", "accent.secondary", AA),
 ]
 
 

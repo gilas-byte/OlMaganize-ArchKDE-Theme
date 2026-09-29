@@ -18,7 +18,7 @@ mode = "symlink"
 [[states]]
 name = "Plasma Style"
 get = "kreadconfig6 --file plasmarc --group Theme --key name"
-set = "plasma-apply-desktoptheme \"$$GIBI_VALUE\""
+set = "targets/plasma-style/apply.sh \"$$GIBI_VALUE\""
 value = "${theme_name}"
 default = "default"
 reapply_on_change = true

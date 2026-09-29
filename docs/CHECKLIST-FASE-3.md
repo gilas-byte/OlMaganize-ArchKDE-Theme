@@ -31,21 +31,21 @@ Regra de ouro (ARCHITECTURE.md §3.4): **nenhuma área maior que um botão fica 
 
 ## Tarefas — `gibi-check-tarefas.png`
 
-- [ ] Janelas sem foco: só o ícone, sem fundo.
+- [ ] Apps abertos sem foco: ícone sem fundo, com uma barrinha bege na borda de baixo (na de cima, se a barra estiver em cima).
 - [ ] Hover numa tarefa: aparece uma **tecla** marrom (brilho no topo, base escura embaixo, sombrinha).
-- [ ] Janela ativa: tecla com face **roxa-escura**, dá para distinguir do hover.
-- [ ] Janela minimizada: fundo plano, apagado.
+- [ ] Janela ativa: tecla com face **marrom-dourada** e barrinha **amarela**, dá para distinguir do hover.
+- [ ] Janela minimizada: sem fundo, barrinha mais apagada.
 - [ ] Janela pedindo atenção (um app que "pisca" na barra, ex.: mensagem nova no Vesktop ou download terminado no Brave com a janela sem foco): tecla com **borda e base amarelas**.
-- [ ] Tarefas agrupadas (várias janelas do mesmo app): selinho roxo com "+".
-- [ ] Barra de progresso na tarefa (copiar um arquivo grande no Dolphin): faixa roxa translúcida.
+- [ ] Tarefas agrupadas (várias janelas do mesmo app): selinho amarelo com "+".
+- [ ] Barra de progresso na tarefa (copiar um arquivo grande no Dolphin): faixa amarela translúcida.
 
 ## Popups — `gibi-check-popups-*.png`
 
 - [ ] Lançador (menu de aplicativos): fundo marrom levemente translúcido com blur atrás, cantos de 10px, borda fina, sombra suave. Campo de busca afundado; com o cursor dentro, anel amarelo fino.
 - [ ] Cabeçalho do popup (topo do lançador, da bandeja): faixa um tom mais escura com linha fina embaixo.
-- [ ] Bandeja do sistema (setinha ^): lista com hover discreto; switches (Wi-Fi, Bluetooth) **roxos** quando ligados, alça redonda clara.
+- [ ] Bandeja do sistema (setinha ^): lista com hover discreto; switches (Wi-Fi, Bluetooth) **amarelos** quando ligados, alça redonda clara.
 - [ ] Calendário do relógio: fundo igual aos outros popups. (O calendário em si segue o Breeze recolorido.)
-- [ ] Volume: slider com trilho escuro, parte preenchida roxa, alça redonda de tecla.
+- [ ] Volume: slider com trilho escuro, parte preenchida amarela, alça redonda de tecla.
 - [ ] Notificação (`notify-send "Gibi" "teste de notificação"`): mesmo visual dos popups, **sem** amarelo.
 - [ ] OSD (mudar o volume pelo teclado): mesmo visual.
 - [ ] Botões dentro dos popups (ex.: "Configurar…" em qualquer popup): teclas pequenas com cantos de 4px.
@@ -58,8 +58,8 @@ Regra de ouro (ARCHITECTURE.md §3.4): **nenhuma área maior que um botão fica 
 
 Botão direito num widget da barra > Configurar…:
 
-- [ ] Checkbox desligado: tecla quadradinha; ligado: roxa com ✓ claro. **Não** redonda (redondo é o radio).
-- [ ] Radio ligado: círculo roxo com ponto claro.
+- [ ] Checkbox desligado: tecla quadradinha; ligado: amarela com ✓ escuro. **Não** redonda (redondo é o radio).
+- [ ] Radio ligado: círculo amarelo com ponto escuro.
 - [ ] Abas (quando houver): aba ativa com linha amarela de 2px.
 
 ## Se algo sair errado
