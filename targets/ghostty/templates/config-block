@@ -1,0 +1,2 @@
+theme = ${theme_id}
+font-family = ${font_mono}

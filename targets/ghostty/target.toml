@@ -1,0 +1,19 @@
+name = "ghostty"
+description = "Terminal Ghostty: tema de cores + fonte"
+order = 60
+packages = ["ghostty"]
+aur_packages = []
+detect = "command -v ghostty"
+message = "Recarregue a config do Ghostty com ctrl+shift+, (ou abra uma janela nova)."
+
+[[files]]
+src = "templates/theme"
+dest = "~/.config/ghostty/themes/${theme_id}"
+mode = "symlink"
+
+# O Ghostty (>= 1.2) lê ~/.config/ghostty/config e DEPOIS config.ghostty; o último vence.
+# Por isso o bloco vai no config.ghostty (criado se não existir).
+[[files]]
+src = "templates/config-block"
+dest = "~/.config/ghostty/config.ghostty"
+mode = "managed-block"
