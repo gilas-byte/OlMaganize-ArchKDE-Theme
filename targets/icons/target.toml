@@ -1,0 +1,22 @@
+name = "icons"
+description = "Ícones Papirus-Dark com pastas coloridas (tema derivado em ~/.local/share/icons)"
+order = 70
+packages = ["papirus-icon-theme"]
+aur_packages = []
+detect = "test -x /usr/lib/plasma-changeicons"
+
+# Em vez do papirus-folders (que precisa de sudo e é desfeito a cada atualização do Papirus),
+# gera um tema "${icon_theme}" que herda o ${kde_icon_base} e troca só as pastas.
+# Cor: palette.toml [kde].folder_color.
+[[states]]
+name = "cor das pastas"
+get = "python3 -m tooling icon-theme get"
+set = "python3 -m tooling icon-theme set \"$$GIBI_VALUE\""
+value = "${kde_folder_color}"
+
+[[states]]
+name = "tema de ícones"
+get = "kreadconfig6 --file kdeglobals --group Icons --key Theme"
+set = "/usr/lib/plasma-changeicons \"$$GIBI_VALUE\""
+value = "${icon_theme}"
+default = "breeze"
