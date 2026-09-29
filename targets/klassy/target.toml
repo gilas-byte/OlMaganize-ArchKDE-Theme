@@ -1,0 +1,95 @@
+name = "klassy"
+description = "Klassy: decoração de janela e estilo de widgets (fase 1)"
+order = 30
+packages = []
+aur_packages = ["klassy"]
+detect = "test -f /usr/share/config.kcfg/klassy-decoration.kcfg"
+
+# Chaves conferidas em /usr/share/config.kcfg/klassy*.kcfg (Klassy 6.7).
+
+[[keys]]
+file = "kwinrc"
+group = "org.kde.kdecoration2"
+key = "library"
+value = "${kde_decoration_library}"
+
+[[keys]]
+file = "kwinrc"
+group = "org.kde.kdecoration2"
+key = "theme"
+value = "${kde_decoration_theme}"
+
+# Fonte única: palette.toml [kde].widget_style (a fase 2 troca para kvantum lá).
+[[keys]]
+file = "kdeglobals"
+group = "KDE"
+key = "widgetStyle"
+value = "${kde_widget_style}"
+
+[[keys]]
+file = "klassy/klassyrc"
+group = "Windeco"
+key = "WindowCornerRadius"
+value = "${shape_radius_l}"
+
+[[keys]]
+file = "klassy/klassyrc"
+group = "Windeco"
+key = "MatchTitleBarToApplicationColor"
+value = false
+
+# Barra de título opaca e com as cores do esquema (janelas com sensação de papel).
+[[keys]]
+file = "klassy/klassyrc"
+group = "TitleBarOpacity"
+key = "ActiveTitleBarOpacity"
+value = 100
+
+[[keys]]
+file = "klassy/klassyrc"
+group = "TitleBarOpacity"
+key = "InactiveTitleBarOpacity"
+value = 100
+
+# Sombras difusas: tamanho médio, força moderada, preta.
+[[keys]]
+file = "klassy/klassyrc"
+group = "ShadowStyle"
+key = "ShadowSizeActive"
+value = "ShadowMedium"
+
+[[keys]]
+file = "klassy/klassyrc"
+group = "ShadowStyle"
+key = "ShadowSizeInactive"
+value = "ShadowMedium"
+
+[[keys]]
+file = "klassy/klassyrc"
+group = "ShadowStyle"
+key = "ShadowStrengthActive"
+value = "${window_shadow_strength}"
+
+[[keys]]
+file = "klassy/klassyrc"
+group = "ShadowStyle"
+key = "ShadowStrengthInactive"
+value = "${window_shadow_strength}"
+
+[[keys]]
+file = "klassy/klassyrc"
+group = "ShadowStyle"
+key = "ShadowColorActive"
+value = "${window_shadow_color_rgb}"
+
+[[keys]]
+file = "klassy/klassyrc"
+group = "ShadowStyle"
+key = "ShadowColorInactive"
+value = "${window_shadow_color_rgb}"
+
+[[post]]
+cmd = "qdbus6 org.kde.KWin /KWin reconfigure"
+
+[[post]]
+cmd = "dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:2 int32:0"
