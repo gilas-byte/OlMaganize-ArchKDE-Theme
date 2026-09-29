@@ -1,0 +1,17 @@
+name = "brave"
+description = "Brave: extensão de tema (cores planas, sem amarelo)"
+order = 80
+packages = []
+aur_packages = []
+detect = "command -v brave || command -v brave-browser || command -v brave-browser-stable"
+message = """
+O Brave não permite instalar temas sem política gerenciada. Para carregar:
+  1. abra brave://extensions
+  2. ligue o "Modo do desenvolvedor"
+  3. "Carregar sem compactação" -> ~/.local/share/${theme_id}/brave-theme
+Depois de atualizações do tema, clique em "Recarregar" no card da extensão."""
+
+[[files]]
+src = "templates/brave-theme"
+dest = "~/.local/share/${theme_id}/brave-theme"
+mode = "copy"

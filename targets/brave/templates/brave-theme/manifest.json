@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "${theme_name}",
+  "version": "1.0",
+  "description": "${theme_name} — marrons quentes inspirados no Primary for Obsidian (Cecilia May).",
+  "theme": {
+    "colors": {
+      "frame": [${base_110_r}, ${base_110_g}, ${base_110_b}],
+      "frame_inactive": [${base_120_r}, ${base_120_g}, ${base_120_b}],
+      "toolbar": [${base_100_r}, ${base_100_g}, ${base_100_b}],
+      "toolbar_text": [${base_20_r}, ${base_20_g}, ${base_20_b}],
+      "toolbar_button_icon": [${base_40_r}, ${base_40_g}, ${base_40_b}],
+      "tab_text": [${base_20_r}, ${base_20_g}, ${base_20_b}],
+      "tab_background_text": [${base_40_r}, ${base_40_g}, ${base_40_b}],
+      "bookmark_text": [${base_20_r}, ${base_20_g}, ${base_20_b}],
+      "ntp_background": [${base_100_r}, ${base_100_g}, ${base_100_b}],
+      "ntp_text": [${base_20_r}, ${base_20_g}, ${base_20_b}],
+      "omnibox_background": [${base_120_r}, ${base_120_g}, ${base_120_b}],
+      "omnibox_text": [${base_20_r}, ${base_20_g}, ${base_20_b}],
+      "button_background": [${base_110_r}, ${base_110_g}, ${base_110_b}]
+    }
+  }
+}
