@@ -1,0 +1,35 @@
+name = "kvantum"
+description = "Kvantum: widgets com efeito de tecla (fase 2)"
+order = 35
+packages = ["kvantum"]
+aur_packages = []
+
+# Gera templates/theme.svg e templates/theme.kvconfig a partir da geometria da paleta.
+generate = "generate.py"
+
+# O Kvantum procura ~/.config/Kvantum/<Tema>/<Tema>.{kvconfig,svg}.
+[[files]]
+src = "templates/theme.kvconfig"
+dest = "~/.config/Kvantum/${theme_name}/${theme_name}.kvconfig"
+mode = "symlink"
+
+[[files]]
+src = "templates/theme.svg"
+dest = "~/.config/Kvantum/${theme_name}/${theme_name}.svg"
+mode = "symlink"
+
+[[keys]]
+file = "~/.config/Kvantum/kvantum.kvconfig"
+group = "General"
+key = "theme"
+value = "${theme_name}"
+
+# Fonte única: palette.toml [kde].widget_style. Na fase 1 esta chave morava no alvo klassy.
+[[keys]]
+file = "kdeglobals"
+group = "KDE"
+key = "widgetStyle"
+value = "${kde_widget_style}"
+
+[[post]]
+cmd = "dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:2 int32:0"
