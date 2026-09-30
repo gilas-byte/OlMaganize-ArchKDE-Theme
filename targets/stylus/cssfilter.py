@@ -14,7 +14,12 @@ import random
 import re
 
 PREFIX = "brightness(0) saturate(100%)"
-ATTEMPTS = 6          # independent wide+narrow solves per color; the best one wins
+ATTEMPTS = 20         # independent wide+narrow solves per color; the best one wins
+# Bump when the solver changes, so cached results (filters.json) are recomputed.
+VERSION = f"spsa-1/{ATTEMPTS}"
+# Highest loss the target accepts. With ATTEMPTS = 20 the palette tops out at ~2.2;
+# 5 is the original generator's "close enough" mark (see docs/STYLUS-FILTERS.md).
+LOSS_LIMIT = 5.0
 
 
 def _clamp(v):
