@@ -10,6 +10,9 @@ Runs before the render ("generate" in target.toml). Pipeline:
      version); a color whose loss exceeds cssfilter.LOSS_LIMIT fails the generate.
   3. rewrite the ==UserStyle== header of every styles/*/catppuccin.user.less: our name and
      namespace, no @updateURL, single-option flavor selects, our accent list.
+  4. embed the rendered lib in place of `@import ".../lib/std/v1.less"`: no hosting, no
+     network, no style loading from a server that is not ours. The syntax-highlight CSS
+     imports (@import url(...)) stay: they are plain CSS reading --ctp-*.
 
 Deterministic and only rewrites files whose content changed, like the other generators.
 Do not edit templates/lib.less by hand: edit lib.less.in or this file and run
@@ -26,7 +29,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HERE))
 
 from tooling.palette import Palette  # noqa: E402
-from tooling.render import write_if_changed  # noqa: E402
+from tooling.render import render_text, write_if_changed  # noqa: E402
 
 import cssfilter  # noqa: E402
 
@@ -60,6 +63,7 @@ ACCENTS = (
     ("subtext0", "Cinza"),
 )
 
+LIB_IMPORT = '@import "https://userstyles.catppuccin.com/lib/std/v1.less";\n'
 HEADER_RE = re.compile(r"\A/\* ==UserStyle==\n(.*?)\n==/UserStyle== \*/\n", re.S)
 
 
@@ -137,6 +141,14 @@ def rewrite_header(site, source):
     return f"/* ==UserStyle==\n{header}\n==/UserStyle== */\n" + source[m.end():]
 
 
+def embed_lib(site, source, lib):
+    """Step 4. `lib` is the rendered lib (hex values, not ${tokens})."""
+    if source.count(LIB_IMPORT) != 1:
+        raise SystemExit(f"stylus: {site}: esperado 1 import da lib std/v1")
+    embedded = f"/* {PAL.name} lib (palette.toml), embedded by generate.py */\n{lib.rstrip()}\n"
+    return source.replace(LIB_IMPORT, embedded)
+
+
 def upstream_styles():
     """[(site, source)] in site order."""
     root = UPSTREAM / "styles"
@@ -146,14 +158,22 @@ def upstream_styles():
     return [(p.parent.name, p.read_text()) for p in sorted(root.glob("*/catppuccin.user.less"))]
 
 
-def build_styles():
+def build_styles(lib_template=None):
     """Steps 3-5 for every style: [(site, source)]."""
-    return [(site, rewrite_header(site, src)) for site, src in upstream_styles()]
+    if lib_template is None:
+        lib_template = (TEMPLATES / "lib.less").read_text()
+    lib = render_text(lib_template, PAL.tokens(), TEMPLATES / "lib.less")
+    out = []
+    for site, src in upstream_styles():
+        src = rewrite_header(site, src)
+        src = embed_lib(site, src, lib)
+        out.append((site, src))
+    return out
 
 
 def main():
-    render_lib(solve_filters())
-    build_styles()
+    lib = render_lib(solve_filters())
+    build_styles(lib)
 
 
 if __name__ == "__main__":
