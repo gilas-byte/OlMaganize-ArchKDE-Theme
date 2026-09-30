@@ -64,4 +64,38 @@ grep -q 'Nada para restaurar' <<<"$out" || fail "restore repetido"
 pass "uninstall repetido é seguro"
 
 rm -rf "$DIR"
+
+# Alvo stylus (PHASE-4 §12): só escreve em ~/.local/share/<id>/stylus, então roda com um
+# HOME temporário para não tocar no do usuário.
+SHOME=$(mktemp -d)
+trap 'rm -rf "$XDG_STATE_HOME" "$SHOME"' EXIT
+SDIR="$SHOME/.local/share/$ID/stylus"
+stylus() { HOME="$SHOME" "$@"; }
+sshot() { find "$SHOME" -printf '%P %y\n' | sort; find "$SHOME" -type f -exec md5sum {} + | sort; }
+
+if stylus ./install.sh --only stylus --dry-run | grep -q 'não detectado'; then
+    echo "PULADO: stylus (Brave não detectado)"
+else
+    before=$(sshot)
+    stylus ./install.sh --only stylus --dry-run >/dev/null
+    [[ "$(sshot)" == "$before" ]] || fail "stylus: dry-run alterou arquivos"
+    pass "stylus: dry-run não altera nada"
+
+    stylus ./install.sh --only stylus >/dev/null
+    cmp -s "$SDIR/import.json" build/stylus/import.json || fail "stylus: import.json instalado"
+    python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "$SDIR/import.json" || fail "stylus: JSON inválido"
+    grep -q '\${' "$SDIR/import.json" && fail "stylus: placeholder sobrando"
+    pass "stylus: render e import.json em ~/.local/share/$ID/stylus"
+
+    after_first=$(sshot)
+    out=$(stylus ./install.sh --only stylus)
+    [[ "$(sshot)" == "$after_first" ]] || fail "stylus: segunda execução alterou arquivos"
+    grep -q 'sem mudanças' <<<"$out" || fail "stylus: segunda execução reportou mudanças"
+    pass "stylus: idempotente"
+
+    stylus ./uninstall.sh --only stylus >/dev/null
+    [[ ! -e "$SDIR" ]] || fail "stylus: uninstall não removeu $SDIR"
+    pass "stylus: uninstall remove a pasta"
+fi
+
 echo "Selftest OK."
