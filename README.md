@@ -5,18 +5,21 @@
 > **Tema Kvantum:** baseado no **KvFlat**, de **Tsu Jan**, um dos temas que acompanham o [Kvantum](https://github.com/tsujan/Kvantum) (licença **GPL-3.0-or-later**). Do KvFlat vieram a estrutura do `.kvconfig` e o conjunto de elementos; o SVG foi redesenhado por `targets/kvantum/generate.py` para ter o efeito de tecla.
 >
 > **Plasma Style:** baseado no **Breeze** (tema `default` do Plasma, do **KDE Visual Design Group**, licença **LGPL**). Do Breeze vieram os nomes de arquivos, prefixos, elementos `hint-*` e margens; o desenho é refeito por `targets/plasma-style/generate.py`.
+>
+> **Páginas web (Stylus):** os estilos vêm do **[Catppuccin Userstyles](https://github.com/catppuccin/userstyles)** (**Catppuccin Org**, licença **MIT**, texto em `targets/stylus/LICENSE-catppuccin-userstyles`), fixados como submodule em `vendor/catppuccin-userstyles`. `targets/stylus/generate.py` troca só a paleta (e o header) de cada estilo; o CSS de cada site é do Catppuccin.
 
 Tema retro-moderno para **Arch Linux / CachyOS com KDE Plasma 6**: marrons quentes, texto bege de baixo contraste, sensação de revista antiga e um acento amarelo vivo usado com parcimônia. "Gibi" é um codinome provisório. O nome fica em um único lugar (`palette.toml → [theme]`), então renomear é trocar `id`/`name` lá e rodar `./install.sh` de novo.
 
 ## Instalação
 
 ```sh
-git clone <repo> ~/Documents/gibi-theme && cd ~/Documents/gibi-theme
+git clone --recursive <repo> ~/Documents/gibi-theme && cd ~/Documents/gibi-theme
+# já clonou sem --recursive? git submodule update --init
 ./install.sh --dry-run       # mostra o que faria, sem alterar nada
 ./install.sh                 # render + checagem de contraste + aplica todos os alvos detectados
 ```
 
-Depois do primeiro install, faça **logout/login** uma vez e siga `docs/CHECKLIST-FASE-1.md`, `docs/CHECKLIST-FASE-2.md` e `docs/CHECKLIST-FASE-3.md`.
+Depois do primeiro install, faça **logout/login** uma vez e siga `docs/CHECKLIST-FASE-1.md`, `docs/CHECKLIST-FASE-2.md`, `docs/CHECKLIST-FASE-3.md` e `docs/CHECKLIST-FASE-4.md`.
 
 ```sh
 ./install.sh --only ghostty  # só um alvo (ou vários: --only gtk,ghostty)
@@ -30,6 +33,7 @@ tests/kvantum-check.py       # alvo kvantum: sem hex solto, templates em dia, el
 tests/kvantum-preview.py     # fotografa os widgets com o tema Kvantum (offscreen) em build/
 tests/plasma-style-check.py  # alvo plasma-style: sem hex solto, templates em dia, nada faltando vs. Breeze
 tests/plasma-style-preview.py # barras, tarefas, popup e controles do Plasma com o KSvg real (offscreen)
+tests/stylus-check.py        # alvo stylus: lib, filtros, import.json, contraste (+ compila tudo se houver node/less)
 ```
 
 ### Garantias
@@ -56,6 +60,8 @@ tests/plasma-style-preview.py # barras, tarefas, popup e controles do Plasma com
 | `breeze-gtk` | extra | gtk |
 | `papirus-icon-theme` | extra | icons |
 | `ghostty` | extra (e cachyos-extra-v3) | ghostty |
+| `vendor/catppuccin-userstyles` | submodule git (`--recursive`) | stylus |
+| `nodejs` + `less@4.2.2` (npm) | extra / npm; opcional | compilação em `tests/stylus-check.py` |
 
 Pacotes faltando são instalados com confirmação: `sudo pacman -S --needed` para os repositórios oficiais e `paru`/`yay -S --needed` para o AUR.
 
@@ -76,6 +82,7 @@ Rodam nesta ordem. Cada alvo é uma pasta em `targets/` com um `target.toml` e `
 | `ghostty` | Tema `gibi` com paleta ANSI + bloco gerenciado no `config.ghostty` (`theme` e `font-family`). |
 | `icons` | Tema de ícones `Gibi-Papirus-Dark`: herda o Papirus-Dark e troca só as pastas por marrons. |
 | `brave` | Extensão de tema em `~/.local/share/gibi/brave-theme` (carregar manualmente, ver abaixo). |
+| `stylus` | `~/.local/share/gibi/stylus/import.json` com os userstyles do Catppuccin recoloridos para a paleta (importar no Stylus, ver abaixo). |
 | `lookandfeel` | Pacote `org.gibi.desktop` sem layout de painéis. Roda por último. |
 
 Alvos com nome começando em `_` (ex.: `_selftest`) só rodam com `--only`.
@@ -102,6 +109,27 @@ O Brave não instala tema sem política gerenciada. Depois do install:
 3. **Carregar sem compactação** → `~/.local/share/gibi/brave-theme`.
 
 Quando o tema mudar, clique em **Recarregar** no card da extensão. O tema do Brave usa só cores planas, sem amarelo.
+
+### Stylus (fase 4)
+
+O conteúdo das páginas vem dos userstyles do Catppuccin, via extensão **Stylus**. Os estilos não têm cor própria: todos leem 26 cores por nome (`@base`, `@text`, `@red`...) de uma lib compartilhada. O alvo troca os valores dessa lib pelos da paleta, então os 134 estilos são recoloridos de uma vez.
+
+Depois do install:
+
+1. no Stylus, **apague ou desative** os estilos "… Catppuccin" (senão os dois ficam ativos em cada site e brigam);
+2. ícone do Stylus → **Gerenciar** → **Importar** → `~/.local/share/gibi/stylus/import.json`.
+
+O que o gerador faz com cada estilo:
+
+- **Paleta:** um flavor só, `gibi`. Mapa dos slots em `targets/stylus/generate.py` (`SLOTS`), com os slots sem token próprio em `palette.toml [web]`. `mauve` e `lavender` mantêm o nome (os estilos citam), mas valem amarelo suave e tan: nada de roxo. Os nomes antigos de flavor (`latte`, `mocha`...) são apelidos do `gibi`, para os estilos que citam flavor direto.
+- **Accent:** padrão amarelo suave (`accent.secondary`), escolhível por estilo nas opções do Stylus. "Amarelo vivo" (`accent.primary`) existe como opção, mas **fura a regra 3.4.1** em sites que usam o accent em áreas grandes: use por sua conta.
+- **Filtros de ícone:** as cadeias `filter:` que recolorem SVGs pretos são recalculadas para cada cor (ver `docs/STYLUS-FILTERS.md`).
+- **Header:** `@name "<site> Gibi"`, `@namespace` próprio (não colide com os do Catppuccin), **sem `@updateURL`**. Se ficasse, o Stylus trocaria o estilo pelo original na checagem de 24h.
+- **Lib embutida** em cada estilo: nada é carregado de `userstyles.catppuccin.com`.
+- **Só alguns sites?** `palette.toml [stylus] include = ["github", "youtube"]` (nomes das pastas em `vendor/catppuccin-userstyles/styles/`). Vazio = todos.
+- **Atualizar o upstream:** `git -C vendor/catppuccin-userstyles pull`, atualize o SHA em `targets/stylus/UPSTREAM`, rode `tests/stylus-check.py` e commite o submodule.
+
+`build/stylus-report.md` lista as cores que os estilos escrevem à mão (ver Limitações).
 
 ### GTK
 
@@ -151,6 +179,12 @@ O Ghostty (>= 1.2) lê `~/.config/ghostty/config` e **depois** `config.ghostty`,
 - **Look-and-Feel:** o `uninstall` só devolve o *nome* do Look-and-Feel anterior (sem reaplicá-lo), porque cada configuração que o pacote aplica já é restaurada pelo seu próprio alvo.
 - **Restore de chaves herdadas:** se um valor vinha em cascata (ex.: `~/.config/kdedefaults`), o restore grava o mesmo valor explicitamente no arquivo do usuário. O efeito é idêntico.
 
+- **Stylus: cores escritas à mão.** 58 estilos têm hex literal no código (488 ocorrências; GitHub, tldraw, proton, twitter, duckduckgo...). Elas não passam pela lib e aparecem com a cor original, em geral pastel, no meio do marrom. Por volta de 278 estão em seletores (`[fill="#fff"]`) e não pintam nada; o resto pinta. Lista completa em `build/stylus-report.md`. Não há remapeamento automático (quebraria SVG e gradiente sem avisar); retoques por site ficam para a fase 4.1.
+- **Stylus: syntax highlight pela rede.** Alguns estilos importam CSS de realce de código (`unpkg.com/@catppuccin/highlightjs`, `python.catppuccin.com`, `prismjs.catppuccin.com`). Esse CSS lê as variáveis `--ctp-*`, então segue a paleta, mas é baixado na hora de usar.
+- **Stylus: contraste.** Sobre o fundo `base.100`: `red` 4.08:1 e `maroon` 4.28:1 (o mesmo `sem.red` do terminal) e `overlay0` 2.14:1 (= `base.60`), que 16 estilos usam como cor de texto (lista no relatório). Se incomodar, dá para clarear só esses slots em `[web]`.
+- **Stylus: reimportar.** Ainda não confirmado se o Stylus atualiza ou duplica um estilo com o mesmo `@namespace`. Até confirmar: apague os "… Gibi" antes de importar uma versão nova.
+- **Stylus: versão do less.** O Stylus compila os estilos no navegador com o less.js dele. O upstream testa com less 4.2.2; com o 4.9, dois estilos dele mesmo (`pronouns.cc`, `google-drive`) não compilam. Isso vale igual para o original e para o Gibi.
+
 ## Estrutura
 
 ```
@@ -159,9 +193,10 @@ install.sh          entrada fina → python3 -m tooling apply
 uninstall.sh        entrada fina → python3 -m tooling restore
 tooling/            Python stdlib: palette, render, contrast, targets, backup, blocks, kde, icons, svgslice
 targets/<alvo>/     target.toml + templates/ com placeholders ${token}
+vendor/             submodules (catppuccin-userstyles, lido pelo alvo stylus)
 build/              saída renderizada (ignorada pelo git)
-docs/               checklists visuais das fases 1, 2 e 3, notas da fase 2, amostra ANSI
-tests/              selftest.sh (fundação), kvantum-{check,preview}.py, plasma-style-{check,preview}.py
+docs/               checklists visuais das fases 1 a 4, notas da fase 2, filtros do stylus, amostra ANSI
+tests/              selftest.sh (fundação + stylus), kvantum-{check,preview}.py, plasma-style-{check,preview}.py, stylus-check.py
 ```
 
 Detalhes de contrato (`palette.toml`, templates, `target.toml`) em `ARCHITECTURE.md`. Além dos campos de lá, o `target.toml` aceita:

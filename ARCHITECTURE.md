@@ -242,6 +242,7 @@ Modos:
 - **Obsidian**: continua com o tema Primary original, sem snippet nem alteração. Ele é a referência visual do projeto, não um alvo.
 - Alvos da lista "depois": btop, fastfetch, starship, VS Code, Vesktop, Spicetify, cursor, SDDM, splash. A estrutura de `targets/` deve tornar cada um deles "só mais uma pasta".
 - ~~Plasma Style próprio~~: implícito como fora de escopo nas fases 1 e 2, entrou na fase 3 (`PHASE-3.md`).
+- Conteúdo das páginas web: entrou na fase 4 (`PHASE-4.md`), via Stylus com os userstyles do Catppuccin recoloridos. Firefox `userContent.css` e tema claro continuam fora.
 
 ## 8. Verificação visual
 
