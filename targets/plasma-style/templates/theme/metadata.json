@@ -9,7 +9,7 @@
         "Id": "${theme_name}",
         "License": "GPL-3.0-or-later",
         "Name": "${theme_name}",
-        "Version": "1.1072518019"
+        "Version": "1.978951541"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }
