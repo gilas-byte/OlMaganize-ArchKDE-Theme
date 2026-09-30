@@ -15,11 +15,14 @@ Runs before the render ("generate" in target.toml). Pipeline:
      imports (@import url(...)) stay: they are plain CSS reading --ctp-*.
   5. alias the legacy flavors (latte, frappe, macchiato, mocha) to `gibi` inside the lib,
      without touching the styles.
+  6. report the hex literals of the upstream styles (build/stylus-report.md). They bypass
+     the lib and stay pastel; the report only lists them, nothing is remapped.
 
 Deterministic and only rewrites files whose content changed, like the other generators.
 Do not edit templates/lib.less by hand: edit lib.less.in or this file and run
 `python3 -m tooling render --only stylus`.
 """
+import colorsys
 import json
 import re
 import sys
@@ -37,6 +40,7 @@ import cssfilter  # noqa: E402
 
 PAL = Palette(ROOT / "palette.toml")
 TEMPLATES = HERE / "templates"
+REPORT = ROOT / "build/stylus-report.md"
 UPSTREAM = ROOT / "vendor/catppuccin-userstyles"
 FLAVOR = PAL.id
 LEGACY_FLAVORS = ("latte", "frappe", "macchiato", "mocha")
@@ -167,6 +171,117 @@ def upstream_styles():
     return [(p.parent.name, p.read_text()) for p in sorted(root.glob("*/catppuccin.user.less"))]
 
 
+HEX_RE = re.compile(r"#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})\b")
+# Blanked before searching (newlines kept, so line numbers survive): comments and url(...).
+SCRUB_RES = (
+    re.compile(r"/\*.*?\*/", re.S),
+    re.compile(r"(?<![:\"'\\])//[^\n]*"),
+    re.compile(r"url\((?:[^()\"']|\"[^\"]*\"|'[^']*')*\)"),
+)
+OVERLAY0_TEXT_RE = re.compile(r"(?<![-\w])color:\s*@overlay0\b")
+
+
+def _blank(m):
+    return re.sub(r"[^\n]", " ", m.group(0))
+
+
+def _neutral(hex_color):
+    h = hex_color[1:]
+    h = h[:6] if len(h) >= 6 else "".join(c * 2 for c in h[:3])
+    r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    _, light, sat = colorsys.rgb_to_hls(r, g, b)
+    return sat < 0.15 or light < 0.06 or light > 0.96
+
+
+def hex_literals(source):
+    """[(line, hex, context)] outside comments and url(). context: "valor" (a declaration
+    value or a function/mixin argument), "string" (inside a quoted string, usually an inline SVG) or "seletor" (an
+    attribute selector such as [fill="#fff"] or a Tailwind class such as .bg-\\[\\#fff\\],
+    which matches the site's color and paints nothing). ID selectors (#add {) are skipped."""
+    text = source
+    for regex in SCRUB_RES:
+        text = regex.sub(_blank, text)
+    out = []
+    for m in HEX_RE.finditer(text):
+        start = m.start()
+        line_start = text.rfind("\n", 0, start) + 1
+        before = text[line_start:start]
+        in_string = before.count('"') % 2 == 1 or before.count("'") % 2 == 1
+        if in_string and re.search(r"\[[^\]]*$", before):
+            context = "seletor"
+        elif in_string:
+            context = "string"
+        else:
+            nxt = re.search(r"[;{}]", text[m.end():])
+            if not (nxt and nxt.group(0) == "{"):
+                context = "valor"
+            elif before.endswith("\\"):
+                context = "seletor"     # escaped Tailwind class: .bg-\[\#E1F0F5\]
+            else:
+                continue                # ID selector
+        out.append((text.count("\n", 0, start) + 1, m.group(0), context))
+    return out
+
+
+def write_report(styles):
+    """Step 6: build/stylus-report.md. Only reports; remapping would silently break SVGs and
+    gradients. Per-site touch-ups are Phase 4.1."""
+    found = {site: hex_literals(src) for site, src in styles}
+    found = {site: hits for site, hits in found.items() if hits}
+    total = sum(len(h) for h in found.values())
+    colored = sum(1 for hits in found.values() for _, x, _ in hits if not _neutral(x))
+    overlay0 = {site: len(OVERLAY0_TEXT_RE.findall(src)) for site, src in styles}
+    overlay0 = {site: n for site, n in overlay0.items() if n}
+    uses = sum(len(re.findall(r"@overlay0\b", src)) for _, src in styles)
+
+    lines = [
+        "# Relatório do alvo stylus",
+        "",
+        f"Gerado por `targets/stylus/generate.py` a partir de `vendor/catppuccin-userstyles` "
+        f"({(HERE / 'UPSTREAM').read_text().split()[1][:7]}). Não edite.",
+        "",
+        "## Hex literais",
+        "",
+        "Cores escritas à mão nos estilos: não passam pela lib, então não seguem a paleta e "
+        "tendem a aparecer pastel no meio do marrom. Fora de comentários e `url()`. **Só "
+        "relatório**: nada é remapeado (PHASE-4.md §10). Contexto: `valor` = valor de "
+        "propriedade ou argumento de função/mixin (pinta), `string` = dentro de string, quase "
+        "sempre SVG inline (pinta), `seletor` = seletor de atributo tipo `[fill=\"#fff\"]` ou "
+        "classe do Tailwind tipo `.bg-[#fff]` (só casa com a cor do site, não pinta).",
+        "",
+        f"**{total} hex em {len(found)} estilos**: {colored} coloridos, {total - colored} "
+        "neutros (saturação < 15% ou quase preto/branco).",
+        "",
+        "| estilo | total | coloridos | valor | string | seletor |",
+        "|---|---|---|---|---|---|",
+    ]
+    for site, hits in sorted(found.items(), key=lambda kv: (-len(kv[1]), kv[0])):
+        ctx = [sum(1 for *_, c in hits if c == k) for k in ("valor", "string", "seletor")]
+        n_col = sum(1 for _, x, _ in hits if not _neutral(x))
+        lines.append(f"| {site} | {len(hits)} | {n_col} | {ctx[0]} | {ctx[1]} | {ctx[2]} |")
+    for title, want_neutral in (("Coloridos", False), ("Neutros", True)):
+        lines += ["", f"### {title}", "", "| estilo | linha | hex | contexto |", "|---|---|---|---|"]
+        for site, hits in sorted(found.items()):
+            for line, x, ctx in hits:
+                if _neutral(x) == want_neutral:
+                    lines.append(f"| {site} | {line} | `{x}` | {ctx} |")
+    lines += [
+        "",
+        "## `overlay0` como cor de texto",
+        "",
+        "`overlay0` = `base.60`, 2.14:1 sobre o fundo (aviso conhecido, como `base.60` no "
+        f"KDE). {uses} usos de `@overlay0` no total; destes, "
+        f"{sum(overlay0.values())} são `color:` (texto) em {len(overlay0)} estilos. Se ficar "
+        "fraco demais na prática, clarear só esse slot em `[web]`.",
+        "",
+        "| estilo | `color: @overlay0` |",
+        "|---|---|",
+    ]
+    lines += [f"| {site} | {n} |" for site, n in sorted(overlay0.items())]
+    REPORT.parent.mkdir(exist_ok=True)
+    write_if_changed(REPORT, "\n".join(lines) + "\n")
+
+
 def build_styles(lib_template=None):
     """Steps 3-5 for every style: [(site, source)]."""
     if lib_template is None:
@@ -183,6 +298,7 @@ def build_styles(lib_template=None):
 def main():
     lib = render_lib(solve_filters())
     build_styles(lib)
+    write_report(upstream_styles())
 
 
 if __name__ == "__main__":
