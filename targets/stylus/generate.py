@@ -13,6 +13,8 @@ Runs before the render ("generate" in target.toml). Pipeline:
   4. embed the rendered lib in place of `@import ".../lib/std/v1.less"`: no hosting, no
      network, no style loading from a server that is not ours. The syntax-highlight CSS
      imports (@import url(...)) stay: they are plain CSS reading --ctp-*.
+  5. alias the legacy flavors (latte, frappe, macchiato, mocha) to `gibi` inside the lib,
+     without touching the styles.
 
 Deterministic and only rewrites files whose content changed, like the other generators.
 Do not edit templates/lib.less by hand: edit lib.less.in or this file and run
@@ -37,6 +39,7 @@ PAL = Palette(ROOT / "palette.toml")
 TEMPLATES = HERE / "templates"
 UPSTREAM = ROOT / "vendor/catppuccin-userstyles"
 FLAVOR = PAL.id
+LEGACY_FLAVORS = ("latte", "frappe", "macchiato", "mocha")
 
 # Lib slot -> palette token (PHASE-4.md §5). Order = the upstream lib's order, plus `primary`
 # (the vivid yellow, offered as the "Amarelo vivo" accent). mauve and lavender keep their
@@ -71,9 +74,13 @@ def placeholder(token):
     return "${" + token.replace(".", "_") + "}"
 
 
-def flavor_map(values):
+def flavor_map(name, kind, values):
+    """`@<id>-<kind>: {...}` plus the `@<name>` map with our flavor and the legacy aliases."""
     body = " ".join(f"@{slot}: {value};" for slot, value in values)
-    return f"  @{FLAVOR}: {{ {body} }};"
+    ruleset = f"@{FLAVOR}-{kind}"
+    keys = "\n".join(f"  @{flavor}: {ruleset};" for flavor in (FLAVOR, *LEGACY_FLAVORS))
+    return (f"/* deno-fmt-ignore */\n{ruleset}: {{ {body} }};\n\n"
+            f"@{name}: {{\n{keys}\n}};")
 
 
 def solve_filters():
@@ -101,8 +108,10 @@ def solve_filters():
 def render_lib(filters):
     """Step 1: lib.less.in -> templates/lib.less, colors as ${tokens}."""
     lib = (HERE / "lib.less.in").read_text()
-    lib = lib.replace("@@PALETTE@@", flavor_map((s, placeholder(t)) for s, t in SLOTS))
-    lib = lib.replace("@@FILTERS@@", flavor_map((s, filters[s][0]) for s, _ in SLOTS))
+    lib = lib.replace("@@PALETTE@@",
+                      flavor_map("catppuccin", "palette", ((s, placeholder(t)) for s, t in SLOTS)))
+    lib = lib.replace("@@FILTERS@@",
+                      flavor_map("catppuccin-filters", "filters", ((s, filters[s][0]) for s, _ in SLOTS)))
     write_if_changed(TEMPLATES / "lib.less", lib)
     return lib
 

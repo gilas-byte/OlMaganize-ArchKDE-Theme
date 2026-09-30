@@ -4,15 +4,13 @@
  * Structure and every name (maps, mixins, --ctp-* variables) follow lib/std/v1.less of
  * catppuccin/userstyles (MIT, Catppuccin Org): names are API, only values change. */
 
-/* deno-fmt-ignore */
-@catppuccin: {
+/* A single flavor. The Catppuccin flavor names are aliases of it (a map entry cannot point
+ * at a sibling, hence the top-level rulesets), so styles that name a flavor directly
+ * (chess.com, google-photos, listenbrainz) resolve to it. `@flavor = latte` checks are
+ * always false now, which picks their dark branch, as intended. */
 @@PALETTE@@
-};
 
-/* deno-fmt-ignore */
-@catppuccin-filters: {
 @@FILTERS@@
-};
 
 #lib {
   .palette() {
