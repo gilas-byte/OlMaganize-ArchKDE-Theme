@@ -10,6 +10,7 @@ Runs before the render ("generate" in target.toml). Pipeline:
      version); a color whose loss exceeds cssfilter.LOSS_LIMIT fails the generate.
   3. rewrite the ==UserStyle== header of every styles/*/catppuccin.user.less: our name and
      namespace, no @updateURL, single-option flavor selects, our accent list.
+     Also fixes the upstream mixin calls that are missing their `[]` lookup (fix_upstream).
   4. embed the rendered lib in place of `@import ".../lib/std/v1.less"`: no hosting, no
      network, no style loading from a server that is not ours. The syntax-highlight CSS
      imports (@import url(...)) stay: they are plain CSS reading --ctp-*.
@@ -156,6 +157,18 @@ def rewrite_header(site, source):
         if n != 1:
             raise SystemExit(f"stylus: {site}: regra de header casou {n}x: {pattern}")
     return f"/* ==UserStyle==\n{header}\n==/UserStyle== */\n" + source[m.end():]
+
+
+# Upstream bug: a few property values call the mixin without the `[]` lookup, e.g.
+# `--bs-darkk-rgb: #lib.rgbify(@base);`. less 4.2 printed "[object Object]" there; the less
+# bundled in Stylus rejects the whole style ("Rulesets cannot be evaluated on a property").
+# Adding `[]` returns the mixin's last variable, which is what every other call does.
+MIXIN_LOOKUP_RE = re.compile(r"(:\s*#lib\.(?:rgbify|hslify)\([^()]*\))(?=\s*[;}])")
+
+
+def fix_upstream(source):
+    """Mechanical fixes for upstream bugs that break compilation (see MIXIN_LOOKUP_RE)."""
+    return MIXIN_LOOKUP_RE.sub(r"\1[]", source)
 
 
 def embed_lib(site, source, lib):
@@ -376,7 +389,7 @@ def build_styles(lib_template=None):
     lib = render_text(lib_template, PAL.tokens(), TEMPLATES / "lib.less")
     out = []
     for site, src in upstream_styles():
-        src = rewrite_header(site, src)
+        src = fix_upstream(rewrite_header(site, src))
         src = embed_lib(site, src, lib)
         out.append((site, src))
     return out

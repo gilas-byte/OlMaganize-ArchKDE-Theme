@@ -2,7 +2,8 @@
 // way Stylus does for the less preprocessor (`@name: value;` before the source).
 // Usage: node tests/stylus-compile.js build/stylus/import.json
 // less comes from LESS_MODULE (path to the package) or the normal require() lookup.
-// Upstream pins less 4.2.2; newer 4.x fail 2 upstream styles (pronouns.cc, google-drive).
+// Test with a recent less too: Stylus bundles a newer one than upstream's 4.2.2, and it is
+// stricter (it rejected pronouns.cc and google-drive until generate.fix_upstream).
 const fs = require("fs");
 const less = require(process.env.LESS_MODULE || "less");
 

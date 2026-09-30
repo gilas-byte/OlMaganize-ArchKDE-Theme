@@ -61,7 +61,7 @@ tests/stylus-check.py        # alvo stylus: lib, filtros, import.json, contraste
 | `papirus-icon-theme` | extra | icons |
 | `ghostty` | extra (e cachyos-extra-v3) | ghostty |
 | `vendor/catppuccin-userstyles` | submodule git (`--recursive`) | stylus |
-| `nodejs` + `less@4.2.2` (npm) | extra / npm; opcional | compilação em `tests/stylus-check.py` |
+| `nodejs` + `less` (npm) | extra / npm; opcional | compilação em `tests/stylus-check.py` |
 
 Pacotes faltando são instalados com confirmação: `sudo pacman -S --needed` para os repositórios oficiais e `paru`/`yay -S --needed` para o AUR.
 
@@ -183,7 +183,7 @@ O Ghostty (>= 1.2) lê `~/.config/ghostty/config` e **depois** `config.ghostty`,
 - **Stylus: syntax highlight pela rede.** Alguns estilos importam CSS de realce de código (`unpkg.com/@catppuccin/highlightjs`, `python.catppuccin.com`, `prismjs.catppuccin.com`). Esse CSS lê as variáveis `--ctp-*`, então segue a paleta, mas é baixado na hora de usar.
 - **Stylus: contraste.** Sobre o fundo `base.100`: `red` 4.08:1 e `maroon` 4.28:1 (o mesmo `sem.red` do terminal) e `overlay0` 2.14:1 (= `base.60`), que 16 estilos usam como cor de texto (lista no relatório). Se incomodar, dá para clarear só esses slots em `[web]`.
 - **Stylus: reimportar.** Ainda não confirmado se o Stylus atualiza ou duplica um estilo com o mesmo `@namespace`. Até confirmar: apague os "… Gibi" antes de importar uma versão nova.
-- **Stylus: versão do less.** O Stylus compila os estilos no navegador com o less.js dele. O upstream testa com less 4.2.2; com o 4.9, dois estilos dele mesmo (`pronouns.cc`, `google-drive`) não compilam. Isso vale igual para o original e para o Gibi.
+- **Stylus: bug do upstream corrigido.** `pronouns.cc` e `google-drive` chamam `#lib.rgbify(...)` sem o `[]` em 6 propriedades. O less 4.2.2 (o do upstream) gerava `[object Object]` ali; o less do Stylus recusa o estilo inteiro ("Rulesets cannot be evaluated on a property"), inclusive nos originais do Catppuccin. O gerador acrescenta o `[]` (`fix_upstream` em `generate.py`), e os 134 compilam no less 4.2.2 e no 4.9.
 
 ## Estrutura
 

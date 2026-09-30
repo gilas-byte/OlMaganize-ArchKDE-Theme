@@ -106,6 +106,8 @@ check(not any("${" in s["sourceCode"] for s in styles), "nenhum placeholder sobr
 check(not any("@updateURL" in s["sourceCode"] or "updateUrl" in s or "updateURL" in s["usercssData"]
               for s in styles), "nenhum @updateURL / updateUrl")
 check(not any("userstyles.catppuccin.com/lib" in s["sourceCode"] for s in styles), "lib embutida (sem import remoto)")
+unfixed = [s["name"] for s in styles if generate.MIXIN_LOOKUP_RE.search(s["sourceCode"])]
+check(not unfixed, f"chamadas #lib.rgbify/hslify com [] (bug do upstream corrigido) {unfixed[:3] if unfixed else ''}")
 flavors = [(s["name"], v) for s in styles for v in ("lightFlavor", "darkFlavor")
            if [o["name"] for o in s["usercssData"]["vars"][v]["options"]] != [generate.FLAVOR]]
 check(not flavors, f"selects de flavor com uma opção só ({generate.FLAVOR}) {flavors[:3] if flavors else ''}")
@@ -140,7 +142,7 @@ probe = node and subprocess.run([node, "-e", f"require({json.dumps(os.environ.ge
                                 capture_output=True).returncode == 0
 if not probe:
     warn("node/less não encontrados: pulando a compilação dos estilos "
-         "(npm install less@4.2.2 e rode com LESS_MODULE=<caminho>/node_modules/less)")
+         "(npm install less e rode com LESS_MODULE=<caminho>/node_modules/less)")
 else:
     result = subprocess.run([node, ROOT / "tests/stylus-compile.js", BUILD / "import.json"],
                             capture_output=True, text=True)
