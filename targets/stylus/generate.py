@@ -17,12 +17,16 @@ Runs before the render ("generate" in target.toml). Pipeline:
      without touching the styles.
   6. report the hex literals of the upstream styles (build/stylus-report.md). They bypass
      the lib and stay pastel; the report only lists them, nothing is remapped.
+  7. assemble templates/import.json for Stylus (Manage -> Import), mirroring upstream's
+     scripts/stylus-import/main.ts. It is big and derived from vendor/, so it is not
+     committed (.gitignore); `$` is escaped as `$$` for the render.
 
 Deterministic and only rewrites files whose content changed, like the other generators.
 Do not edit templates/lib.less by hand: edit lib.less.in or this file and run
 `python3 -m tooling render --only stylus`.
 """
 import colorsys
+import hashlib
 import json
 import re
 import sys
@@ -282,6 +286,89 @@ def write_report(styles):
     write_if_changed(REPORT, "\n".join(lines) + "\n")
 
 
+# Recommended settings, as in upstream's import.json.
+SETTINGS = {"settings": {"updateInterval": 24, "updateOnlyEnabled": True, "patchCsp": True,
+                         "editor.linter": ""}}
+VAR_RE = re.compile(r"""^(\S+)\s+(\S+)\s+(?:"([^"]*)"|'([^']*)')\s*(.*)$""")
+
+
+def _loose_json(text):
+    """Header arrays use single quotes at times: ['px']."""
+    return json.loads(re.sub(r"'([^']*)'", lambda m: json.dumps(m[1]), text))
+
+
+def parse_var(text):
+    """One `@var` line (after "@var "), shaped like usercss-meta's output."""
+    m = VAR_RE.match(text)
+    if not m:
+        raise SystemExit(f"stylus: @var não reconhecido: {text}")
+    kind, name, label, value = m[1], m[2], m[3] if m[3] is not None else m[4], m[5].strip()
+    var = {"type": kind, "label": label, "name": name, "value": None}
+    if kind == "select":
+        options, default = [], None
+        for item in _loose_json(value):
+            opt, _, opt_label = item.partition(":")
+            opt_label = opt_label or opt
+            if opt_label.endswith("*"):
+                opt_label, default = opt_label[:-1], opt
+            options.append({"name": opt, "label": opt_label, "value": opt})
+        var["default"] = default if default is not None else options[0]["name"]
+        var["options"] = options
+    elif kind == "checkbox":
+        var["default"], var["options"] = value, None
+    elif kind == "range":
+        default, lo, hi, step, *units = _loose_json(value)
+        var.update(default=default, options=None, min=lo, max=hi, step=step,
+                   units=units[0] if units else None)
+    elif kind == "text":
+        var["default"], var["options"] = value[1:-1] if value[:1] in "\"'" else value, None
+    else:
+        raise SystemExit(f"stylus: tipo de @var sem suporte: {kind}")
+    return var
+
+
+def parse_header(source):
+    """usercssData: the ==UserStyle== keys in order, @var lines collected into `vars`."""
+    meta = {}
+    for line in HEADER_RE.match(source)[1].splitlines():
+        if not line.startswith("@"):
+            continue
+        key, _, value = line[1:].partition(" ")
+        if key == "var":
+            var = parse_var(value)
+            meta.setdefault("vars", {})[var["name"]] = var
+        else:
+            meta[key] = value.strip()
+    return meta
+
+
+def selected(styles):
+    include = PAL.raw.get("stylus", {}).get("include", [])
+    if not include:
+        return styles
+    unknown = sorted(set(include) - {site for site, _ in styles})
+    if unknown:
+        raise SystemExit(f"stylus: [stylus].include tem site(s) desconhecido(s): {', '.join(unknown)}")
+    return [(site, src) for site, src in styles if site in include]
+
+
+def write_import(styles):
+    """Step 7. No updateUrl (Stylus would replace the style with the original);
+    originalDigest is Stylus' calcStyleDigest for usercss: sha1 of the source."""
+    entries = []
+    for site, src in styles:
+        meta = parse_header(src)
+        entries.append({
+            "enabled": True, "name": meta["name"], "description": meta["description"],
+            "author": meta["author"], "usercssData": meta, "sourceCode": src,
+            "originalDigest": hashlib.sha1(src.encode()).hexdigest(),
+        })
+    entries.sort(key=lambda e: (e["name"].casefold(), e["name"]))
+    text = json.dumps([SETTINGS, *entries], ensure_ascii=False, separators=(",", ":"))
+    write_if_changed(TEMPLATES / "import.json", text.replace("$", "$$") + "\n")
+    return len(entries)
+
+
 def build_styles(lib_template=None):
     """Steps 3-5 for every style: [(site, source)]."""
     if lib_template is None:
@@ -297,7 +384,7 @@ def build_styles(lib_template=None):
 
 def main():
     lib = render_lib(solve_filters())
-    build_styles(lib)
+    write_import(selected(build_styles(lib)))
     write_report(upstream_styles())
 
 

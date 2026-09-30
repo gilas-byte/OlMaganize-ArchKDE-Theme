@@ -7,3 +7,16 @@ detect = "command -v brave || command -v brave-browser || command -v brave-brows
 
 # Gera templates/ a partir de vendor/catppuccin-userstyles (submodule) e da paleta.
 generate = "generate.py"
+
+# Sem modo de instalar userstyles fora da UI do Stylus: o alvo só entrega o arquivo.
+message = """
+Importe no Stylus: ícone do Stylus -> Gerenciar -> Importar ->
+  ~/.local/share/${theme_id}/stylus/import.json
+ANTES de importar, apague ou desative os estilos "… Catppuccin": senão os dois ficam
+ativos em cada site e brigam. Ao reimportar uma versão nova, apague os "… ${theme_name}" antes.
+Cores que os estilos escrevem à mão (não seguem a paleta): build/stylus-report.md."""
+
+[[files]]
+src = "templates/import.json"
+dest = "~/.local/share/${theme_id}/stylus/import.json"
+mode = "copy"
