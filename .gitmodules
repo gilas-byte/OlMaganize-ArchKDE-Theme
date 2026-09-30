@@ -1,0 +1,4 @@
+[submodule "vendor/catppuccin-userstyles"]
+	path = vendor/catppuccin-userstyles
+	url = https://github.com/catppuccin/userstyles.git
+	shallow = true

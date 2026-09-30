@@ -100,3 +100,20 @@ decoration_theme = "Klassy"
 icon_base = "Papirus-Dark"
 # Cor das pastas (qualquer cor do Papirus: brown, yellow, grey, ...).
 folder_color = "brown"
+
+# Alvo stylus (PHASE-4.md §5): slots da lib dos userstyles do Catppuccin que não têm token
+# próprio. Os outros slots apontam direto para base.*, sem.* e accent.* (mapa em
+# targets/stylus/generate.py). mix(a, b, t): t é o peso de b.
+[web]
+subtext0 = "mix(base.40, base.20, 0.5)"
+maroon = "mix(sem.red, sem.pink, 0.35)"
+teal = "mix(sem.green, sem.cyan, 0.5)"
+sky = "mix(sem.cyan, base.10, 0.25)"
+sapphire = "mix(sem.cyan, sem.blue, 0.5)"
+flamingo = "mix(sem.pink, base.10, 0.30)"
+rosewater = "mix(sem.pink, base.10, 0.55)"
+
+# Sites a incluir no import.json do Stylus (nomes das pastas em styles/ do upstream,
+# ex.: ["github", "youtube"]). Vazio = todos.
+[stylus]
+include = []
