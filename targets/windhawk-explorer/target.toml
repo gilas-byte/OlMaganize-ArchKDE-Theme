@@ -10,7 +10,7 @@ Passo manual (sem admin, o Windhawk não aceita configuração por script; docs/
   3. Selecione tudo, cole por cima e clique em "Salvar configurações". Abra uma janela nova do Explorer.
 A configuração anterior do mod foi exportada para o backup; o uninstall mostra o arquivo para colar de volta."""
 
-# Opaco, como as janelas no KDE (sensação de papel): faixa das abas em base.110, aba ativa,
+# Opaco, como as janelas no KDE (sensação de papel): aba ativa,
 # barra de comandos e barra de endereço em base.100, campos em base.120 com borda base.70.
 # O miolo (lista de arquivos e árvore lateral) é Win32 e não passa por aqui: fica no escuro
 # padrão do Windows até a W3 (.msstyles).
@@ -25,7 +25,6 @@ backgroundTranslucentEffect = "none"
 backgroundTranslucentEffectRegion = ""
 styleConstants = [
     'Bg=<SolidColorBrush Color="${base_100}"/>',
-    'Bar=<SolidColorBrush Color="${base_110}"/>',
     'Field=<SolidColorBrush Color="${base_120}"/>',
     'Line=<SolidColorBrush Color="${base_70}"/>',
     'Tip=<SolidColorBrush Color="${base_140}"/>',
@@ -35,10 +34,9 @@ themeResourceVariables = [""]
 explorerFrameContainerHeight = 0
 xamlDiagnosticsHandling = "alert"
 
-[[windhawk.settings.controlStyles]]
-target = 'Grid#TabContainerGrid'
-styles = ['Background:=$$Bar']
-
+# A faixa das abas (Grid#TabContainerGrid) NÃO é pintada: os botões minimizar/maximizar/fechar
+# são desenhados pelo sistema por trás dela, e um fundo opaco ali os esconde. Ela fica com a
+# cor da moldura da janela.
 [[windhawk.settings.controlStyles]]
 target = 'Grid#TabContainerGrid > Border#LeftBottomBorderLine, Grid#TabContainerGrid > Border#RightBottomBorderLine'
 styles = ['Background:=$$Line']

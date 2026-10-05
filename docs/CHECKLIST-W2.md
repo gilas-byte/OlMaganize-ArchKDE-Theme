@@ -19,7 +19,8 @@ Regra de ouro (ARCHITECTURE.md §3.4): **nenhuma área grande amarela**, **nenhu
 
 Abra uma janela **nova** do Explorer.
 
-- [ ] Faixa das abas em marrom escuro (`#2A241E`), aba ativa e barra de comandos em `#2E261F`, ligadas sem degrau. Linha fina `#51402F` embaixo da barra de comandos. Screenshot: `-Name explorer -Window`.
+- [ ] Botões **minimizar, maximizar e fechar visíveis** no canto (a faixa das abas fica com a cor da moldura; pintá-la escondia esses botões).
+- [ ] Aba ativa e barra de comandos em `#2E261F`, ligadas sem degrau. Linha fina `#51402F` embaixo da barra de comandos. Screenshot: `-Name explorer -Window`.
 - [ ] Barra de endereço e busca: campo mais escuro (`#26211C`) com borda marrom e cantos de 7px.
 - [ ] Início e Galeria (lado esquerdo > Início): fundo marrom.
 - [ ] Dica (passe o mouse num botão da barra): fundo quase preto `#1C1712`, texto bege.
