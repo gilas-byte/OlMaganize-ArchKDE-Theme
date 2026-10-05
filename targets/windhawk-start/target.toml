@@ -1,0 +1,76 @@
+name = "windhawk-start"
+description = "Windhawk: Start Menu Styler com a paleta (passo manual: instalar o mod e colar)"
+platforms = ["windows"]
+order = 70
+detect_paths = ["%ProgramFiles%/Windhawk/windhawk.exe"]
+message = """
+Passo manual (sem admin, o Windhawk não aceita configuração por script; docs/SPIKE-S1.md):
+  0. Se faltar o mod: Windhawk > Explorar > "Windows 11 Start Menu Styler" > Instalar.
+  1. Copie:  Get-Content '${user_data}\\windhawk\\windows-11-start-menu-styler.yaml' -Raw | Set-Clipboard
+  2. Windhawk > "Windows 11 Start Menu Styler" > Configurações > "Textual mode"
+  3. Selecione tudo, cole por cima e clique em "Salvar configurações". Abra o Iniciar.
+A configuração anterior do mod (se havia) foi exportada para o backup; o uninstall mostra o arquivo."""
+
+# Só cor, sem mexer no layout (o Iniciar novo do build 26300 continua com as seções dele).
+# Painel como os popups do KDE: base.90 a surface.float_opacity com blur, borda base.70,
+# cantos radius_l. Busca como campo afundado. O amarelo continua só onde o Windows usa a cor
+# de destaque (foco, item marcado).
+[windhawk]
+mod = "windows-11-start-menu-styler"
+title = "Windows 11 Start Menu Styler"
+snippet = "${user_data}/windhawk/windows-11-start-menu-styler.yaml"
+
+[windhawk.settings]
+theme = ""
+disableNewStartMenuLayout = ""
+styleConstants = [
+    'Panel=<WindhawkBlur BlurAmount="18" TintColor="#${surface_float_opacity_hexalpha}${base_90_nohash}" FallbackColor="${base_90}"/>',
+    'Float=<SolidColorBrush Color="${base_90}"/>',
+    'Field=<SolidColorBrush Color="${base_120}"/>',
+    'Line=<SolidColorBrush Color="${base_70}"/>',
+    'Tip=<SolidColorBrush Color="${base_140}"/>',
+]
+themeResourceVariables = [""]
+webContentStyles = [{ target = "", styles = [""] }]
+webContentCustomJs = ""
+
+[[windhawk.settings.controlStyles]]
+target = 'Border#AcrylicBorder, Border#AppBorder, Border#AccentAppBorder'
+styles = ['Background:=$$Panel', 'BorderBrush:=$$Line', 'BorderThickness=1', 'CornerRadius=${shape_radius_l}']
+
+[[windhawk.settings.controlStyles]]
+target = 'Border#AcrylicOverlay, Border#LayerBorder'
+styles = ['Visibility=Collapsed']
+
+[[windhawk.settings.controlStyles]]
+target = 'Border#StartDropShadow, Border#dropshadow'
+styles = ['CornerRadius=${shape_radius_l}']
+
+[[windhawk.settings.controlStyles]]
+target = 'StartMenu.SearchBoxToggleButton > Grid > Border#BorderElement'
+styles = ['Background:=$$Field', 'BorderBrush:=$$Line', 'BorderThickness=1', 'CornerRadius=${shape_radius_m}']
+
+[[windhawk.settings.controlStyles]]
+target = 'Border#TaskbarSearchBackground'
+styles = ['Background:=$$Panel', 'BorderBrush:=$$Line', 'BorderThickness=1', 'CornerRadius=${shape_radius_l}']
+
+[[windhawk.settings.controlStyles]]
+target = 'StartMenu.FolderModal > Grid > Border'
+styles = ['Background:=$$Float', 'BorderBrush:=$$Line', 'BorderThickness=1', 'CornerRadius=${shape_radius_l}']
+
+[[windhawk.settings.controlStyles]]
+target = 'MenuFlyoutPresenter > Border'
+styles = ['Background:=$$Float', 'BorderBrush:=$$Line', 'BorderThickness=1', 'CornerRadius=${shape_radius_l}']
+
+[[windhawk.settings.controlStyles]]
+target = 'ToolTip > ContentPresenter#LayoutRoot'
+styles = ['Background:=$$Tip', 'BorderBrush:=$$Line']
+
+# Texto: bege normal nos nomes, bege forte nos títulos.
+[[windhawk.settings.controlStyles]]
+target = 'TextBlock#AppDisplayName, TextBlock#DisplayName'
+styles = ['Foreground=${base_20}']
+
+[[windhawk.settings.controlStyles]]
+target = 'TextBlock#PinnedListHeaderText, TextBlock#AllAppsHeading'
+styles = ['Foreground=${base_10}']

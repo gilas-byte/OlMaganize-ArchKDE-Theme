@@ -1,0 +1,78 @@
+name = "windhawk-explorer"
+description = "Windhawk: File Explorer Styler com a paleta (passo manual: colar no Windhawk)"
+platforms = ["windows"]
+order = 72
+detect_paths = ["%ProgramFiles%/Windhawk/windhawk.exe"]
+message = """
+Passo manual (sem admin, o Windhawk não aceita configuração por script; docs/SPIKE-S1.md):
+  1. Copie:  Get-Content '${user_data}\\windhawk\\windows-11-file-explorer-styler.yaml' -Raw | Set-Clipboard
+  2. Windhawk > "Windows 11 File Explorer Styler" > Configurações > "Textual mode"
+  3. Selecione tudo, cole por cima e clique em "Salvar configurações". Abra uma janela nova do Explorer.
+A configuração anterior do mod foi exportada para o backup; o uninstall mostra o arquivo para colar de volta."""
+
+# Opaco, como as janelas no KDE (sensação de papel): faixa das abas em base.110, aba ativa,
+# barra de comandos e barra de endereço em base.100, campos em base.120 com borda base.70.
+# O miolo (lista de arquivos e árvore lateral) é Win32 e não passa por aqui: fica no escuro
+# padrão do Windows até a W3 (.msstyles).
+[windhawk]
+mod = "windows-11-file-explorer-styler"
+title = "Windows 11 File Explorer Styler"
+snippet = "${user_data}/windhawk/windows-11-file-explorer-styler.yaml"
+
+[windhawk.settings]
+theme = ""
+backgroundTranslucentEffect = "none"
+backgroundTranslucentEffectRegion = ""
+styleConstants = [
+    'Bg=<SolidColorBrush Color="${base_100}"/>',
+    'Bar=<SolidColorBrush Color="${base_110}"/>',
+    'Field=<SolidColorBrush Color="${base_120}"/>',
+    'Line=<SolidColorBrush Color="${base_70}"/>',
+    'Tip=<SolidColorBrush Color="${base_140}"/>',
+    'Text=<SolidColorBrush Color="${base_20}"/>',
+]
+themeResourceVariables = [""]
+explorerFrameContainerHeight = 0
+xamlDiagnosticsHandling = "alert"
+
+[[windhawk.settings.controlStyles]]
+target = 'Grid#TabContainerGrid'
+styles = ['Background:=$$Bar']
+
+[[windhawk.settings.controlStyles]]
+target = 'Grid#TabContainerGrid > Border#LeftBottomBorderLine, Grid#TabContainerGrid > Border#RightBottomBorderLine'
+styles = ['Background:=$$Line']
+
+[[windhawk.settings.controlStyles]]
+target = 'TabViewItem > Grid#LayoutRoot > Canvas > Microsoft.UI.Xaml.Shapes.Path#SelectedBackgroundPath'
+styles = ['Fill:=$$Bg', 'Stroke:=$$Line']
+
+[[windhawk.settings.controlStyles]]
+target = 'FileExplorerExtensions.CommandBarControl_Wave1 > Grid, Grid#CommandBarControlRootGrid'
+styles = ['Background:=$$Bg', 'BorderBrush:=$$Line', 'BorderThickness=0,0,0,1']
+
+[[windhawk.settings.controlStyles]]
+target = 'CommandBar#FileExplorerCommandBar, CommandBar#FileExplorerSecondaryCommandBar'
+styles = ['Background=Transparent']
+
+[[windhawk.settings.controlStyles]]
+target = 'Grid#NavigationBarControlGrid'
+styles = ['Background:=$$Bg']
+
+# Barra de endereço e busca: campo afundado (sem efeito de tecla), raio radius_m.
+[[windhawk.settings.controlStyles]]
+target = 'Grid#PART_LayoutRoot'
+styles = ['Background:=$$Field', 'BorderBrush:=$$Line', 'BorderThickness=1', 'CornerRadius=${shape_radius_m}']
+
+[[windhawk.settings.controlStyles]]
+target = 'AutoSuggestBox#FileExplorerSearchBox > Grid#LayoutRoot > TextBox > Grid@CommonStates > Border#BorderElement'
+styles = ['Background:=$$Field', 'BorderBrush:=$$Line', 'BorderThickness=1', 'CornerRadius=${shape_radius_m}']
+
+# Telas XAML do miolo (Início, Galeria, painel de detalhes).
+[[windhawk.settings.controlStyles]]
+target = 'Grid#HomeViewRootGrid, FileExplorerExtensions.GalleryViewControl#GalleryViewControl > Grid, Microsoft.UI.Xaml.Controls.Grid#GalleryRootGrid, Grid#DetailsViewControlRootGrid, StackPanel#DetailsViewThumbnail > Grid'
+styles = ['Background:=$$Bg']
+
+[[windhawk.settings.controlStyles]]
+target = 'ToolTip'
+styles = ['Background:=$$Tip', 'Foreground:=$$Text', 'BorderBrush:=$$Line']

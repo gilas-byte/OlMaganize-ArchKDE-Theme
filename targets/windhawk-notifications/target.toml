@@ -1,0 +1,43 @@
+name = "windhawk-notifications"
+description = "Windhawk: Notification Center Styler com a paleta (passo manual: instalar o mod e colar)"
+platforms = ["windows"]
+order = 71
+detect_paths = ["%ProgramFiles%/Windhawk/windhawk.exe"]
+message = """
+Passo manual (sem admin, o Windhawk não aceita configuração por script; docs/SPIKE-S1.md):
+  0. Se faltar o mod: Windhawk > Explorar > "Windows 11 Notification Center Styler" > Instalar.
+  1. Copie:  Get-Content '${user_data}\\windhawk\\windows-11-notification-center-styler.yaml' -Raw | Set-Clipboard
+  2. Windhawk > "Windows 11 Notification Center Styler" > Configurações > "Textual mode"
+  3. Selecione tudo, cole por cima e clique em "Salvar configurações". Abra a central (Win+N).
+A configuração anterior do mod (se havia) foi exportada para o backup; o uninstall mostra o arquivo."""
+
+# Central de notificações, calendário, configurações rápidas, mídia, notificações (toasts) e
+# jump lists: iguais aos popups do Plasma Style (base.90 a surface.float_opacity com blur,
+# borda base.70, cantos radius_l). Toggles ligados seguem a cor de destaque (tamanho de botão).
+[windhawk]
+mod = "windows-11-notification-center-styler"
+title = "Windows 11 Notification Center Styler"
+snippet = "${user_data}/windhawk/windows-11-notification-center-styler.yaml"
+
+[windhawk.settings]
+theme = ""
+styleConstants = [
+    'Panel=<WindhawkBlur BlurAmount="18" TintColor="#${surface_float_opacity_hexalpha}${base_90_nohash}" FallbackColor="${base_90}"/>',
+    'Float=<SolidColorBrush Color="${base_90}"/>',
+    'Line=<SolidColorBrush Color="${base_70}"/>',
+    'Clear=<SolidColorBrush Color="Transparent"/>',
+]
+themeResourceVariables = [""]
+
+[[windhawk.settings.controlStyles]]
+target = 'Grid#NotificationCenterGrid, Grid#CalendarCenterGrid, Grid#ControlCenterRegion, Grid#MediaTransportControlsRegion, Border#ToastBackgroundBorder, Border#ToastBackgroundBorder2, Border#JumpListRestyledAcrylic'
+styles = ['Background:=$$Panel', 'BorderBrush:=$$Line', 'BorderThickness=1', 'CornerRadius=${shape_radius_l}']
+
+# Camadas internas que repintariam o fundo padrão por cima do painel.
+[[windhawk.settings.controlStyles]]
+target = 'ScrollViewer#CalendarControlScrollViewer, Border#CalendarHeaderMinimizedOverlay, ActionCenter.FocusSessionControl#FocusSessionControl > Grid#FocusGrid, Grid#L1Grid > Border, Grid#MediaTransportControlsRoot, ScrollViewer#ListContent, ActionCenter.FlexibleToastView#FlexibleNormalToastView'
+styles = ['Background:=$$Clear']
+
+[[windhawk.settings.controlStyles]]
+target = 'MenuFlyoutPresenter > Border'
+styles = ['Background:=$$Float', 'BorderBrush:=$$Line', 'BorderThickness=1', 'CornerRadius=${shape_radius_l}']
