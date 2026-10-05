@@ -21,7 +21,7 @@ function Fail($msg) { Write-Host "FALHOU: $msg" -ForegroundColor Red; throw "sel
 $tmp = Join-Path ([IO.Path]::GetTempPath()) ("gibi-selftest-" + [guid]::NewGuid().ToString('N').Substring(0, 8))
 $redirect = "Software\gibi-selftest-" + [guid]::NewGuid().ToString('N').Substring(0, 8)
 $saved = @{ LOCALAPPDATA = $env:LOCALAPPDATA; USERPROFILE = $env:USERPROFILE; YASB_CONFIG_HOME = $env:YASB_CONFIG_HOME
-            GIBI_REGISTRY_REDIRECT = $env:GIBI_REGISTRY_REDIRECT }
+            GIBI_REGISTRY_REDIRECT = $env:GIBI_REGISTRY_REDIRECT; GIBI_WINDHAWK_ROOT = $env:GIBI_WINDHAWK_ROOT }
 $realKeys = @(
     @('HKCU:\Software\Microsoft\Windows\DWM', 'AccentColor'),
     @('HKCU:\Software\Microsoft\Windows\DWM', 'ColorPrevalence'),
@@ -54,12 +54,18 @@ $env:USERPROFILE = "$tmp\home"
 Remove-Item Env:\YASB_CONFIG_HOME -ErrorAction SilentlyContinue
 $env:GIBI_REGISTRY_REDIRECT = $redirect
 $regRoot = "HKCU:\$redirect"
+# W2 only reads Windhawk's settings; point the reads at a fake Windhawk under the test key.
+$env:GIBI_WINDHAWK_ROOT = "HKCU\$redirect\Windhawk"
+$whMods = "$regRoot\Windhawk\Engine\Mods"
 
 $id = (Get-Content "$repo\palette.toml" | Select-String '^id = "(.+)"').Matches[0].Groups[1].Value
 $dir = "$tmp\local\$id-selftest"
 $yasb = "$tmp\home\.config\yasb"
 $state = "$tmp\local\$id\state"
 $targets = '_selftest-win,win-colors,windows-terminal,yasb,brave,stylus'
+# The windhawk-* targets detect the real Windhawk install (they never write to it).
+$wh = Test-Path "$env:ProgramFiles\Windhawk\windhawk.exe"
+if ($wh) { $targets += ',windhawk-start,windhawk-notifications,windhawk-explorer' }
 
 function Invoke-Gibi($script, [string[]]$extra) {
     $ErrorActionPreference = 'Continue'
@@ -107,6 +113,10 @@ try {
     New-Item "$regRoot\Software\gibi-selftest\Values" -Force | Out-Null
     New-ItemProperty "$regRoot\Software\gibi-selftest\Values" -Name Dword -Value 7 -PropertyType DWord | Out-Null
     New-ItemProperty "$regRoot\Software\gibi-selftest\Values" -Name Obsolete -Value 'x' -PropertyType String | Out-Null
+    # Fake Windhawk: Explorer styler installed with its own theme, Start/Notification absent.
+    New-Item "$whMods\windows-11-file-explorer-styler\Settings" -Force | Out-Null
+    New-ItemProperty "$whMods\windows-11-file-explorer-styler\Settings" -Name theme -Value 'LiquidGlass' -PropertyType String | Out-Null
+    New-ItemProperty "$whMods\windows-11-file-explorer-styler\Settings" -Name 'styleConstants[0]' -Value '' -PropertyType String | Out-Null
     New-Item "$regRoot\Software\Microsoft\Windows\DWM" -Force | Out-Null
     New-ItemProperty "$regRoot\Software\Microsoft\Windows\DWM" -Name AccentColor -Value 0x1234 -PropertyType DWord | Out-Null
     $before = Snapshot
@@ -171,6 +181,19 @@ try {
     } else { Write-Host "PULADO: stylus (submodule vazio)" }
     $backups = @(Get-ChildItem "$state\backups" -Recurse -Filter manifest.json)
     if ($backups.Count -ne 1) { Fail "esperado 1 backup, achei $($backups.Count)" }
+    if ($wh) {
+        foreach ($m in 'windows-11-start-menu-styler', 'windows-11-notification-center-styler', 'windows-11-file-explorer-styler') {
+            $snip = "$tmp\local\$id\windhawk\$m.yaml"
+            if (-not (Test-Path $snip)) { Fail "windhawk: snippet $m" }
+            if ((Get-Content $snip -Raw) -match '\$\{') { Fail "windhawk: placeholder sobrando em $m" }
+        }
+        $export = Get-ChildItem "$state\backups" -Recurse -Filter 'windhawk-windows-11-file-explorer-styler.yaml'
+        if (-not $export -or (Get-Content $export.FullName -Raw) -notmatch "theme: 'LiquidGlass'") { Fail "windhawk: configuração anterior exportada" }
+        if (Get-ChildItem "$state\backups" -Recurse -Filter 'windhawk-windows-11-start-menu-styler.yaml') { Fail "windhawk: exportou mod ausente" }
+        if ($out -notmatch 'pendente: colar .*windows-11-file-explorer-styler') { Write-Host $out; Fail "windhawk: status pendente (colar)" }
+        if ($out -notmatch 'pendente: instale o mod "Windows 11 Start Menu Styler"') { Fail "windhawk: status mod ausente" }
+        Pass "windhawk: snippets, export da configuração anterior e status (só leitura)"
+    } else { Write-Host "PULADO: windhawk-* (Windhawk não instalado)" }
     Pass "install aplica copy, managed-block, registry, fontes, fragmento, yasb, brave e stylus"
 
     # --- idempotence -----------------------------------------------------------------------
@@ -181,8 +204,9 @@ try {
     Pass "idempotente"
 
     # --- restore ---------------------------------------------------------------------------
-    $null = Invoke-Gibi 'uninstall.ps1' @('-DryRun')
+    $plan = Invoke-Gibi 'uninstall.ps1' @('-DryRun')
     if ((Snapshot) -ne $afterFirst) { Fail "uninstall -DryRun alterou algo" }
+    if ($wh -and $plan -notmatch 'cole .*windhawk-windows-11-file-explorer-styler\.yaml') { Write-Host $plan; Fail "windhawk: uninstall não indicou o arquivo para colar de volta" }
     $null = Invoke-Gibi 'uninstall.ps1' @()
     $after = Snapshot
     if ($after -ne $before) {
