@@ -95,7 +95,11 @@ function Snapshot {
 
 try {
     # Pre-existing user content that must survive (LF, like the real styles.css).
-    New-Item -ItemType Directory -Force $dir, $yasb, "$tmp\local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe" | Out-Null
+    $wtSettings = "$tmp\local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+    New-Item -ItemType Directory -Force $dir, $yasb, (Split-Path $wtSettings) | Out-Null
+    [IO.File]::WriteAllText($wtSettings, "{ `"profiles`": { `"defaults`": {} } }`n")
+    $wtStamp = (Get-Date).AddDays(-1)
+    (Get-Item $wtSettings).LastWriteTime = $wtStamp
     [IO.File]::WriteAllText("$dir\host.conf", "linha do usuario = 1`n")
     [IO.File]::WriteAllText("$dir\host.css", "@import 'colors.css';`n.user { color: red; }`n")
     [IO.File]::WriteAllText("$yasb\styles.css", ":root { --bar_bg: #000000; }`n.yasb-bar { background-color: var(--bar_bg); }`n")
@@ -153,6 +157,8 @@ try {
     $frag = "$tmp\local\Microsoft\Windows Terminal\Fragments\$id\$id.json"
     $json = Get-Content $frag -Raw -Encoding UTF8 | ConvertFrom-Json
     if ($json.schemes[0].background -ne '#2E261F' -or $json.profiles.Count -ne 2) { Fail "fragmento do Windows Terminal" }
+    # Content of settings.json is covered by the snapshot; only its timestamp may move (reload).
+    if ((Get-Item $wtSettings).LastWriteTime -le $wtStamp) { Fail "windows-terminal: não pediu reload (data do settings.json)" }
     $styles = [IO.File]::ReadAllText("$yasb\styles.css")
     if (-not $styles.StartsWith(":root { --bar_bg: #000000; }")) { Fail "yasb: styles.css do usuário alterado" }
     if ($styles -notmatch '@import "' + $id + '.css";') { Fail "yasb: @import ausente" }

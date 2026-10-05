@@ -66,7 +66,7 @@ Feito com `.\install.ps1` depois do spike, com backup em `%LOCALAPPDATA%\gibi\st
 
 - **Cor de destaque: registro + `WM_SETTINGCHANGE` basta**, pelo menos para o que o WinRT reporta: num processo novo, sem logoff, `UISettings` deu Accent `#FFEA00`, AccentLight2 `#FFF04C`, AccentDark1 `#D9C700` (os tons calculados pelo alvo). Se o Explorer, o Iniciar ou apps já abertos acompanham sem logoff, só o checklist diz.
 - **Fontes:** as 30 entraram em HKCU, e o .NET (GDI) já lista `Inter` e `CaskaydiaCove NF` na mesma sessão, sem logoff.
-- **Windows Terminal:** fragmento gravado, `settings.json` com o mesmo SHA-256 de antes. Falta confirmar na tela que o terminal não mostra aviso.
+- **Windows Terminal:** fragmento gravado, `settings.json` com o mesmo SHA-256 de antes. **Mas o fundo continuou preto:** o terminal aberto desde antes do install não relê fragmentos, e janelas ou abas novas reaproveitam o mesmo processo. Amostrando um pixel do fundo: `#0C0C0C`; depois de atualizar só a data de modificação do `settings.json` (o terminal recarrega quando o arquivo muda): `#2E261F`. O alvo passou a fazer isso sozinho (`[[post]] notify = "windows-terminal"`, repetido no uninstall), sem mudar o conteúdo do arquivo.
 - **YASB:** o watcher registrou `Stylesheet modified` logo depois do install (recarregou sozinho).
 - Segunda execução: todos os alvos em `sem mudanças`, nenhum backup novo.
 

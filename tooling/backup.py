@@ -236,7 +236,4 @@ def _notify(areas):
         return
     from .backends import winapi
     for area in areas:
-        if area == "fonts":
-            winapi.font_change()
-        else:
-            winapi.setting_change(area)
+        winapi.notify(area)

@@ -306,7 +306,7 @@ class Runner:
         changes.append(f"bloco gerenciado em {dest}")
         if not self.dry_run:
             entry = {"kind": "block", "target": target.name, "path": str(dest), "markers": [begin, end],
-                     "created_dirs": _missing_dirs(dest)}
+                     "created_dirs": _missing_dirs(dest), **self._notify_field(target)}
             self.session.record(entry, save_path=dest if exists else None)
             dest.parent.mkdir(parents=True, exist_ok=True)
             write_text_newlines(dest, new, newline)
@@ -314,7 +314,7 @@ class Runner:
 
     def _record_file(self, target, dest, existed):
         entry = {"kind": "file", "target": target.name, "path": str(dest), "existed": existed,
-                 "created_dirs": _missing_dirs(dest)}
+                 "created_dirs": _missing_dirs(dest), **self._notify_field(target)}
         self.session.record(entry, save_path=dest if existed else None)
 
     def _key(self, target, spec, changes):
@@ -349,13 +349,16 @@ class Runner:
     def _notify_areas(self, target):
         return [spec["notify"] for spec in target.meta.get("post", []) if "notify" in spec]
 
+    def _notify_field(self, target):
+        """{"notify": [...]} for a manifest entry, so restore repeats the target's notices.
+        Empty (no key at all) for targets without them, which keeps Linux manifests as before."""
+        areas = self._notify_areas(target)
+        return {"notify": areas} if areas else {}
+
     @staticmethod
     def _notify(area):
         from .backends import winapi
-        if area == "fonts":
-            winapi.font_change()
-        else:
-            winapi.setting_change(area)
+        winapi.notify(area)
 
     def _registry(self, target, spec, changes):
         from .backends import registry

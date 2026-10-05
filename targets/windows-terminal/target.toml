@@ -20,3 +20,9 @@ Se você definir esquema ou fonte no settings.json, o seu valor vence o do tema.
 src = "templates/fragment.json"
 dest = "%LOCALAPPDATA%/Microsoft/Windows Terminal/Fragments/${theme_id}/${theme_id}.json"
 mode = "copy"
+
+# O terminal só lê fragmentos ao (re)carregar as configurações, e janelas novas reaproveitam o
+# processo aberto. Atualizar a data do settings.json (sem mudar o conteúdo) faz ele recarregar
+# na hora; o uninstall repete o aviso para o esquema sair também.
+[[post]]
+notify = "windows-terminal"
