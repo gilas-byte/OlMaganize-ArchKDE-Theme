@@ -6,7 +6,7 @@ detect_paths = ["%ProgramFiles%/Windhawk/windhawk.exe"]
 message = """
 Passo manual (sem admin, o Windhawk não aceita configuração por script; docs/SPIKE-S1.md):
   0. Se faltar o mod: Windhawk > Explorar > "Windows 11 Notification Center Styler" > Instalar.
-  1. Copie:  Get-Content '${user_data}\\windhawk\\windows-11-notification-center-styler.yaml' -Raw | Set-Clipboard
+  1. Copie:  Get-Content '${user_data}\\windhawk\\windows-11-notification-center-styler.yaml' -Raw -Encoding UTF8 | Set-Clipboard
   2. Windhawk > "Windows 11 Notification Center Styler" > Configurações > "Textual mode"
   3. Selecione tudo, cole por cima e clique em "Salvar configurações". Abra a central (Win+N).
 A configuração anterior do mod (se havia) foi exportada para o backup; o uninstall mostra o arquivo."""

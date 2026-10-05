@@ -5,7 +5,7 @@ order = 72
 detect_paths = ["%ProgramFiles%/Windhawk/windhawk.exe"]
 message = """
 Passo manual (sem admin, o Windhawk não aceita configuração por script; docs/SPIKE-S1.md):
-  1. Copie:  Get-Content '${user_data}\\windhawk\\windows-11-file-explorer-styler.yaml' -Raw | Set-Clipboard
+  1. Copie:  Get-Content '${user_data}\\windhawk\\windows-11-file-explorer-styler.yaml' -Raw -Encoding UTF8 | Set-Clipboard
   2. Windhawk > "Windows 11 File Explorer Styler" > Configurações > "Textual mode"
   3. Selecione tudo, cole por cima e clique em "Salvar configurações". Abra uma janela nova do Explorer.
 A configuração anterior do mod foi exportada para o backup; o uninstall mostra o arquivo para colar de volta."""
