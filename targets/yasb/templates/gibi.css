@@ -1,0 +1,139 @@
+/*
+ * ${theme_name} para o YASB. Gerado de palette.toml por targets/yasb; não edite aqui.
+ * Importado no FIM do styles.css: as regras abaixo vencem as suas com a mesma especificidade.
+ *
+ * 1. Variáveis: recolore os dois estilos que vêm com o YASB sem mudar o layout
+ *    (o "i3-style", com --bar_bg/--text/..., e o do assistente, com --yasb-*).
+ * 2. Barra e widgets: fundo, borda e efeito de tecla (ARCHITECTURE.md §3.5).
+ */
+
+:root {
+    /* i3-style */
+    --bar_bg: ${base_100};
+    --line: ${base_70};
+    --text: ${base_20};
+    --text_alt: ${base_40};
+    --text_hover: ${base_10};
+    --text_selected: ${base_10};
+    --text_unchecked: ${base_50};
+    --widget_bg: ${base_90};
+    --widget_bg_alt: ${base_110};
+    --widget_border: ${base_70};
+    --widget_border_alt: ${base_80};
+    --global_widget_border: 1px solid ${base_70};
+    --global_widget_border_alt: 1px solid ${base_80};
+    --workspace_active: ${accent_primary};
+    --workspace_inactive: ${base_40};
+    --workspace_empty: ${base_60};
+    --workspace_hover: ${base_10};
+    --progress_bar_load: ${accent_secondary};
+    --tooltip_color: ${base_140};
+    --context_menu_bg: ${base_90};
+    --context_menu_box_checked: ${accent_secondary};
+    --context_menu_box_unchecked: ${base_120};
+    --context_menu_separator: ${base_70};
+    --context_menu_disabled: ${base_60};
+    --power_menu_elem_bg: ${base_110};
+    --power_menu_elem_hover: ${base_80};
+    --power_menu_buttons: ${base_40};
+    --power_menu_border: ${accent_primary};
+    --notes_border: ${base_80};
+    --notes_hover: rgba(${base_70_rgb}, 0.5);
+    --notes_elem_bg: ${base_80};
+    --notes_elem_hover: ${base_70};
+    --notes_add_note_hover: ${base_70};
+    --notes_input_bg: ${base_120};
+    --notes_del_button: ${sem_red};
+    --notes_del_button_pressed: ${sem_red};
+    --notes_copy_button: ${base_40};
+    --notes_copy_button_pressed: ${sem_green};
+    --wallpaper_focused: ${accent_primary};
+    --media_menu_source: ${base_70};
+    --media_menu_source_text: ${base_10};
+    --media_menu_prog_slid_gr: ${base_120};
+    --media_menu_prog_slid_gr_hover: ${base_80};
+    --media_menu_prog_slid_gr_sp: ${accent_secondary};
+    --media_menu_btn: ${base_40};
+    --media_menu_btn_alt: ${base_50};
+    --media_menu_btn_hover: ${base_10};
+    --media_menu_btn_hover_alt: ${base_20};
+    --media_menu_btn_disabled: ${base_60};
+    --open_meteo_card_day_hover: rgba(${base_70_rgb}, 0.3);
+    --open_meteo_card_day_active: ${base_80};
+    --open_meteo_card_hourly_active: ${base_80};
+
+    /* assistente do YASB (--yasb-*) */
+    --yasb-bar-bg: ${base_100};
+    --yasb-bar-border: ${base_70};
+    --yasb-fg: ${base_20};
+    --yasb-fg-muted: ${base_40};
+    --yasb-icon-fg: ${base_20};
+    --yasb-popup-bg: ${base_90};
+    --yasb-dialog-bg: ${base_90};
+    --yasb-dialog-surface: ${base_110};
+    --yasb-surface-alt: ${base_80};
+    --yasb-tooltip-bg: ${base_140};
+    --yasb-tooltip-border: ${base_70};
+    --yasb-accent: ${accent_secondary};
+    --yasb-accent-hover: ${accent_primary};
+    --yasb-accent-fg: ${accent_on_primary};
+}
+
+/* Barra opaca, com a linha base.70 do lado voltado para a tela (barra no topo). */
+.yasb-bar {
+    background-color: ${base_100};
+    border-bottom: 1px solid ${base_70};
+}
+
+/* Efeito de tecla: face base.90, brilho de 1px no topo, borda interna e base inferior escura. */
+.widget .widget-container {
+    background-color: ${base_90};
+    border-top: 1px solid ${keycap_highlight};
+    border-left: ${shape_border_width}px solid ${shape_border_color};
+    border-right: ${shape_border_width}px solid ${shape_border_color};
+    border-bottom: ${keycap_base_depth}px solid ${keycap_base_color};
+    border-radius: ${shape_radius_m}px;
+    margin: 3px 2px;
+    padding: 0 6px;
+}
+.widget .widget-container:hover {
+    background-color: ${base_80};
+}
+
+/* Sem tecla: separadores, áreas de workspaces e bandeja (têm botões próprios). */
+.separator-widget .widget-container,
+.glazewm-workspaces .widget-container,
+.komorebi-workspaces .widget-container,
+.windows-desktops .widget-container,
+.systray .widget-container {
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Bateria: cores semânticas da paleta em vez de red/yellow puros. */
+.battery-widget .widget-container .icon.status-low {
+    color: ${sem_red};
+}
+.battery-widget .widget-container .icon.status-medium {
+    color: ${sem_orange};
+}
+
+/* Menus: item em hover/seleção como nos menus do Kvantum. */
+.context-menu::item:selected,
+.context-menu .menu-checkbox:hover {
+    background-color: ${selection_bg_subtle};
+    color: ${selection_fg};
+}
+.audio-container .device.selected {
+    background-color: ${selection_bg};
+}
+.audio-container .device:hover {
+    background-color: ${base_80};
+}
+
+/* Bandeja: hover em base.80 (não amarelo). */
+.systray .button:hover {
+    background: ${base_80};
+}

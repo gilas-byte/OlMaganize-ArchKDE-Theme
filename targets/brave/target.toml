@@ -1,5 +1,6 @@
 name = "brave"
 description = "Brave: extensão de tema (cores planas, sem amarelo)"
+platforms = ["linux", "windows"]
 order = 80
 packages = []
 aur_packages = []
@@ -16,4 +17,24 @@ src = "templates/brave-theme"
 dest = "~/.local/share/${theme_id}/brave-theme"
 mode = "copy"
 # O Brave grava o tema compilado dentro da pasta da extensão; não é mudança nossa.
+ignore = ["Cached Theme.pak"]
+
+# Windows: mesma extensão, em %LOCALAPPDATA%\${theme_id}\brave-theme (PHASE-WindowsOnly.md §4).
+[windows]
+detect_paths = [
+    "%ProgramFiles%/BraveSoftware/Brave-Browser/Application/brave.exe",
+    "%ProgramFiles(x86)%/BraveSoftware/Brave-Browser/Application/brave.exe",
+    "%LOCALAPPDATA%/BraveSoftware/Brave-Browser/Application/brave.exe",
+]
+message = """
+O Brave não permite instalar temas sem política gerenciada. Para carregar:
+  1. abra brave://extensions
+  2. ligue o "Modo do desenvolvedor"
+  3. "Carregar sem compactação" -> ${user_data}\\brave-theme
+Depois de atualizações do tema, clique em "Recarregar" no card da extensão."""
+
+[[windows.files]]
+src = "templates/brave-theme"
+dest = "${user_data}/brave-theme"
+mode = "copy"
 ignore = ["Cached Theme.pak"]

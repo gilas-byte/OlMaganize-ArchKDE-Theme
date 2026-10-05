@@ -1,0 +1,25 @@
+name = "yasb"
+description = "YASB: gibi.css importado no fim do styles.css (config.yaml intocado)"
+platforms = ["windows"]
+order = 65
+# Só com o YASB já configurado: criar um styles.css só com o @import trocaria o estilo
+# padrão do YASB por um quase vazio.
+detect_paths = ["${yasb_config}/styles.css"]
+message = """
+Com watch_stylesheet: true no config.yaml, o YASB recarrega sozinho (inclusive quando só o
+${theme_id}.css muda). Se estiver false, reinicie o YASB."""
+
+[[files]]
+src = "templates/gibi.css"
+dest = "${yasb_config}/${theme_id}.css"
+mode = "copy"
+
+# O YASB 2.x troca cada @import pelo conteúdo do arquivo no lugar onde ele aparece
+# (docs/SPIKE-S0.md). No fim do styles.css, as regras do tema vêm depois das suas e vencem;
+# o resto do arquivo não é tocado.
+[[files]]
+src = "templates/import.css"
+dest = "${yasb_config}/styles.css"
+mode = "managed-block"
+comment = "/*"
+position = "bottom"

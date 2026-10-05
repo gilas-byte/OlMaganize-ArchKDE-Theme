@@ -1,0 +1,86 @@
+name = "win-colors"
+description = "Windows: modo escuro e cor de destaque amarela (nunca em área grande)"
+platforms = ["windows"]
+order = 20
+message = """
+A cor de destaque aparece em Configurações > Personalização > Cores. Se ela não mudou
+(ou só mudou em parte), faça logoff/login uma vez: o Windows não documenta como avisar
+todos os componentes sem isso (docs/SPIKE-S0.md §2)."""
+
+# Chaves conferidas no spike S0 (docs/SPIKE-S0.md §2). Todas em HKCU: sem admin.
+
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+name = "AppsUseLightTheme"
+type = "dword"
+value = 0
+
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+name = "SystemUsesLightTheme"
+type = "dword"
+value = 0
+
+# Regra 3.4.1: com destaque #FFEA00, "mostrar a cor de destaque" no Iniciar/barra de tarefas
+# ou nas barras de título pintaria áreas grandes de amarelo. As duas ficam desligadas.
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+name = "ColorPrevalence"
+type = "dword"
+value = 0
+
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\DWM'
+name = "ColorPrevalence"
+type = "dword"
+value = 0
+
+# Cor de destaque: accent.primary nos formatos que cada chave usa.
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\DWM'
+name = "AccentColor"
+type = "dword"
+format = "abgr"
+value = "${accent_primary}"
+
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\DWM'
+name = "ColorizationColor"
+type = "dword"
+format = "argb"
+alpha = 196
+value = "${accent_primary}"
+
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\DWM'
+name = "ColorizationAfterglow"
+type = "dword"
+format = "argb"
+alpha = 196
+value = "${accent_primary}"
+
+# 8 tons (Light3..Dark3) derivados de accent.primary no backend (registry.accent_shades).
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent'
+name = "AccentPalette"
+type = "binary"
+format = "accent-palette"
+value = "${accent_primary}"
+
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent'
+name = "AccentColorMenu"
+type = "dword"
+format = "abgr"
+value = "${accent_primary}"
+
+# StartColorMenu = Dark1 (slot 4 do AccentPalette), como o próprio Windows grava.
+[[registry]]
+key = 'HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Accent'
+name = "StartColorMenu"
+type = "dword"
+format = "shade:4"
+value = "${accent_primary}"
+
+[[post]]
+notify = "ImmersiveColorSet"

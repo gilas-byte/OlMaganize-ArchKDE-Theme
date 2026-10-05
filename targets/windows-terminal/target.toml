@@ -1,0 +1,22 @@
+name = "windows-terminal"
+description = "Windows Terminal: esquema de cores e fonte por fragmento (settings.json intocado)"
+platforms = ["windows"]
+order = 60
+# Store, Preview ou instalação sem pacote: os três leem a mesma pasta de fragmentos.
+detect_paths = [
+    "%LOCALAPPDATA%/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe",
+    "%LOCALAPPDATA%/Packages/Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe",
+    "%LOCALAPPDATA%/Microsoft/Windows Terminal/settings.json",
+]
+message = """
+Abra uma janela nova do Windows Terminal. O esquema "${theme_name}" vale sozinho no
+Windows PowerShell e no Prompt de Comando; nos outros perfis (WSL, PowerShell 7...),
+escolha-o em Configurações > <perfil> > Aparência > Esquema de cores.
+Se você definir esquema ou fonte no settings.json, o seu valor vence o do tema."""
+
+# Fragmento (docs/SPIKE-S0.md §1): cria o esquema e altera só colorScheme e font.face dos dois
+# perfis padrão. Transparência, acrílico e imagem de fundo não são tocados.
+[[files]]
+src = "templates/fragment.json"
+dest = "%LOCALAPPDATA%/Microsoft/Windows Terminal/Fragments/${theme_id}/${theme_id}.json"
+mode = "copy"

@@ -1,5 +1,6 @@
 name = "stylus"
 description = "Stylus (Brave): userstyles do Catppuccin recoloridos com a paleta (fase 4)"
+platforms = ["linux", "windows"]
 order = 81
 packages = []
 aur_packages = []
@@ -19,4 +20,23 @@ Cores que os estilos escrevem à mão (não seguem a paleta): build/stylus-repor
 [[files]]
 src = "templates/import.json"
 dest = "~/.local/share/${theme_id}/stylus/import.json"
+mode = "copy"
+
+# Windows: o mesmo import.json, em %LOCALAPPDATA%\${theme_id}\stylus.
+[windows]
+detect_paths = [
+    "%ProgramFiles%/BraveSoftware/Brave-Browser/Application/brave.exe",
+    "%ProgramFiles(x86)%/BraveSoftware/Brave-Browser/Application/brave.exe",
+    "%LOCALAPPDATA%/BraveSoftware/Brave-Browser/Application/brave.exe",
+]
+message = """
+Importe no Stylus: ícone do Stylus -> Gerenciar -> Importar ->
+  ${user_data}\\stylus\\import.json
+ANTES de importar, apague ou desative os estilos "… Catppuccin": senão os dois ficam
+ativos em cada site e brigam. Ao reimportar uma versão nova, apague os "… ${theme_name}" antes.
+Cores que os estilos escrevem à mão (não seguem a paleta): build/stylus-report.md."""
+
+[[windows.files]]
+src = "templates/import.json"
+dest = "${user_data}/stylus/import.json"
 mode = "copy"

@@ -1,0 +1,39 @@
+{
+  "profiles": [
+    {
+      "updates": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+      "colorScheme": "${theme_name}",
+      "font": { "face": "${font_mono}" }
+    },
+    {
+      "updates": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
+      "colorScheme": "${theme_name}",
+      "font": { "face": "${font_mono}" }
+    }
+  ],
+  "schemes": [
+    {
+      "name": "${theme_name}",
+      "background": "${base_100}",
+      "foreground": "${base_20}",
+      "cursorColor": "${accent_primary}",
+      "selectionBackground": "${selection_bg}",
+      "black": "${base_140}",
+      "red": "${sem_red}",
+      "green": "${sem_green}",
+      "yellow": "${sem_yellow}",
+      "blue": "${sem_blue}",
+      "purple": "${sem_pink}",
+      "cyan": "${sem_cyan}",
+      "white": "${base_20}",
+      "brightBlack": "${base_70}",
+      "brightRed": "${ansi_bright_red}",
+      "brightGreen": "${ansi_bright_green}",
+      "brightYellow": "${ansi_bright_yellow}",
+      "brightBlue": "${ansi_bright_blue}",
+      "brightPurple": "${ansi_bright_magenta}",
+      "brightCyan": "${ansi_bright_cyan}",
+      "brightWhite": "${base_10}"
+    }
+  ]
+}

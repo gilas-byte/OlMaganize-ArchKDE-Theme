@@ -1,0 +1,26 @@
+name = "win-fonts"
+description = "Windows: Inter e CaskaydiaCove Nerd Font instaladas por usuário (sem admin)"
+platforms = ["windows"]
+order = 10
+message = """
+Fontes instaladas só para o seu usuário. Apps abertos antes do install podem precisar ser
+reabertos para ver as fontes novas."""
+
+# Releases oficiais, versão e SHA-256 fixados (docs/SPIKE-S0.md §3). O arquivo baixado fica
+# em %LOCALAPPDATA%\gibi\cache\fonts. Fonte já instalada para todos os usuários é pulada.
+# Licenças: Inter e Nerd Fonts são SIL OFL 1.1; nada é redistribuído pelo repo.
+
+# Inter v4.1: os TTF estáticos (apps GDI só enxergam pesos nomeados), sem InterDisplay.
+[[fonts]]
+family = "${font_ui}"
+source = "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip"
+sha256 = "9883fdd4a49d4fb66bd8177ba6625ef9a64aa45899767dde3d36aa425756b11e"
+files = "extras/ttf/Inter-*.ttf"
+
+# Nerd Fonts v3.5.1: só a família "CaskaydiaCove Nerd Font" (nome GDI: "CaskaydiaCove NF"),
+# sem as variantes Mono e Propo. O .tar.xz tem 3,6 MB; o .zip, 56 MB.
+[[fonts]]
+family = "${font_mono}"
+source = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/CascadiaCode.tar.xz"
+sha256 = "ae598e9401e2846aa3ee364513715de0490b844a4b54f0768991f45f23aa8369"
+files = "CaskaydiaCoveNerdFont-*.ttf"
