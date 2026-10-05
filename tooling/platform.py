@@ -93,14 +93,19 @@ def state_dir(theme_id):
     return Path(base) / theme_id
 
 
-def tokens(theme_id):
+def tokens(theme_id, palette_tokens=None):
     """Extra placeholders for target.toml/templates on this platform. Empty on Linux."""
     if not is_windows():
         return {}
     home = Path.home()
     yasb = os.environ.get("YASB_CONFIG_HOME") or str(home / ".config" / "yasb")
-    return {
+    out = {
         "user_data": str(local_appdata() / theme_id),
         "local_appdata": str(local_appdata()),
         "yasb_config": yasb,
     }
+    # XAML colors take alpha first (#AARRGGBB): surface.float_opacity as two hex digits.
+    opacity = (palette_tokens or {}).get("surface_float_opacity")
+    if opacity is not None:
+        out["surface_float_opacity_hexalpha"] = f"{round(float(opacity) * 255):02X}"
+    return out

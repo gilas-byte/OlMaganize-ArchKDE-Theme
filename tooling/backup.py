@@ -14,7 +14,7 @@ def state_dir(theme_id):
 
 def _identity(entry):
     kind = entry["kind"]
-    if kind in ("file", "block"):
+    if kind in ("file", "block", "windhawk"):
         return (kind, entry["path"])
     if kind == "key":
         return (kind, entry["file"], tuple(entry["group"]), entry["key"])
@@ -82,6 +82,14 @@ class BackupSession:
         tmp = self.dir / "manifest.json.tmp"
         tmp.write_text(json.dumps({"entries": self.entries}, indent=2, ensure_ascii=False))
         tmp.replace(self.dir / "manifest.json")
+
+    def extra_file(self, name, text):
+        """Store an extra text file in this backup (e.g. settings exported for a manual
+        restore). Returns its absolute path."""
+        self._ensure()
+        path = self.dir / "files" / name
+        path.write_text(text)
+        return path
 
     def record(self, entry, save_path=None):
         ident = _identity(entry)
@@ -169,6 +177,12 @@ def describe(entry):
     if kind == "font":
         what = "restaurar" if entry.get("saved") else "remover"
         return f"{what} fonte {entry['path']}"
+    if kind == "windhawk":
+        what = "restaurar" if entry.get("saved") else "remover"
+        back = (f"; no Windhawk, cole {entry['export']} no mod \"{entry['title']}\" para voltar à configuração anterior"
+                if entry.get("export") else
+                f"; no Windhawk, a configuração do mod \"{entry['title']}\" continua até você trocá-la")
+        return f"{what} {entry['path']}{back}"
     return f"{entry['name']} -> {entry['old'] or entry.get('default') or '(vazio)'}"
 
 
@@ -183,7 +197,7 @@ def _restore_entry(entry, bdir, cwd):
 def _restore_one(entry, bdir, cwd):
     kind = entry["kind"]
     saved = bdir / entry["saved"] if entry.get("saved") else None
-    if kind == "file":
+    if kind in ("file", "windhawk"):
         path = Path(entry["path"])
         remove_path(path)
         if saved is not None:

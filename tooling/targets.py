@@ -115,11 +115,15 @@ class Runner:
         self.root = Path(root)
         self.palette = palette
         self.tokens = palette.tokens()
-        self.tokens.update(platform.tokens(palette.id))
+        self.tokens.update(platform.tokens(palette.id, self.tokens))
         self.dry_run = dry_run
         self.out = out
         self.build = self.root / "build"
         self.session = BackupSession(palette.id)
+        # Per-target notices shown even without changes (e.g. a pending manual step), and
+        # whether the target still waits for the user. Always empty for Linux targets.
+        self.notes = []
+        self.pending = False
 
     def t(self, value, origin):
         if isinstance(value, bool):
@@ -228,6 +232,8 @@ class Runner:
     def apply(self, target):
         """Aplica um alvo. Retorna a lista de mudanças (descrições)."""
         changes = []
+        self.notes = []
+        self.pending = False
         files_changed = False
         rendered = self._render_changed(target)
         for spec in target.meta.get("files", []):
@@ -243,6 +249,8 @@ class Runner:
             self._key(target, spec, changes)
         for spec in target.meta.get("registry", []):
             self._registry(target, spec, changes)
+        if "windhawk" in target.meta:
+            self._windhawk(target, target.meta["windhawk"], changes)
         for spec in target.meta.get("states", []):
             self._state(target, spec, changes, files_changed)
         if changes:
@@ -436,6 +444,62 @@ class Runner:
             winapi.font_change()
         return changed
 
+    def _render_tree(self, value, origin):
+        """Render ${tokens} in every string of a TOML structure."""
+        if isinstance(value, dict):
+            return {k: self._render_tree(v, origin) for k, v in value.items()}
+        if isinstance(value, list):
+            return [self._render_tree(v, origin) for v in value]
+        if isinstance(value, str):
+            return self.t(value, origin)
+        return value
+
+    def _windhawk(self, target, spec, changes):
+        """[windhawk]: settings of one Windhawk mod (W2, docs/SPIKE-S1.md).
+
+        Writes the YAML for Windhawk's "Textual mode" to `snippet` (backed up and removed on
+        uninstall like any copied file) and READS the mod's current settings to report whether
+        the manual paste is still pending. Best effort: problems become notes, never errors.
+        """
+        from .backends import windhawk
+        origin = f"{target.name}: windhawk"
+        mod, title = spec["mod"], spec.get("title", spec["mod"])
+        settings = self._render_tree(spec["settings"], origin)
+        dest = Path(platform.expand(self.t(spec["snippet"], origin)))
+        text = windhawk.to_yaml(settings, header=(
+            f"{self.palette.name} para o mod \"{title}\" do Windhawk. Gerado de palette.toml; não edite.",
+            "Windhawk > mod > Configurações > Textual mode > colar tudo > Salvar configurações."))
+        try:
+            installed = windhawk.installed(mod)
+            current = windhawk.current(mod) if installed else {}
+        except (OSError, windhawk.WindhawkError) as err:
+            installed, current = None, {}
+            self.notes.append(f"aviso: não consegui ler a configuração do mod no Windhawk ({err})")
+
+        if not (dest.is_file() and dest.read_text() == text):
+            changes.append(f"configuração do mod \"{title}\" em {dest}")
+            if not self.dry_run:
+                existed = dest.exists()
+                entry = {"kind": "windhawk", "target": target.name, "path": str(dest), "existed": existed,
+                         "mod": mod, "title": title, "created_dirs": _missing_dirs(dest), "export": None}
+                if current:
+                    entry["export"] = str(self.session.extra_file(
+                        f"windhawk-{mod}.yaml", windhawk.to_yaml(windhawk.unflatten(current), header=(
+                            f"Configuração do mod \"{title}\" antes do {self.palette.name}.",
+                            "Para voltar: Windhawk > mod > Configurações > Textual mode > colar > Salvar."))))
+                self.session.record(entry, save_path=dest if existed else None)
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_text(text)
+
+        if installed is False:
+            self.pending = True
+            self.notes.append(f"pendente: instale o mod \"{title}\" no Windhawk (Explorar) e cole {dest}")
+        elif installed and windhawk.applied(settings, current):
+            self.notes.append(f"Windhawk: o mod \"{title}\" já está com esta configuração")
+        elif installed:
+            self.pending = True
+            self.notes.append(f"pendente: colar {dest} no mod \"{title}\" (passo manual abaixo)")
+
     def _state(self, target, spec, changes, files_changed):
         origin = f"{target.name}: state {spec['name']}"
         value = self.t(spec["value"], origin)
@@ -485,15 +549,18 @@ def run(root, palette, targets, dry_run=False, out=print):
             continue
         for change in changes:
             out(f"  {'~' if dry_run else '+'} {change}")
+        if not changes:
+            out("  sem mudanças")
+        for note in runner.notes:
+            out(f"  ! {note}")
         message = target.meta.get("message")
-        if changes and message:
+        if (changes or runner.pending) and message:
             out("")
             for line in runner.t(message, f"{target.name}: message").rstrip().splitlines():
                 out(f"  {line}")
-        if not changes:
-            out("  sem mudanças")
         verb = "mudaria" if dry_run else "aplicado"
-        summary.append((target.name, f"{verb} ({len(changes)} mudança(s))" if changes else "sem mudanças"))
+        status = f"{verb} ({len(changes)} mudança(s))" if changes else "sem mudanças"
+        summary.append((target.name, status + (" — passo manual pendente" if runner.pending else "")))
 
     out("\nResumo:")
     width = max((len(n) for n, _ in summary), default=0)
