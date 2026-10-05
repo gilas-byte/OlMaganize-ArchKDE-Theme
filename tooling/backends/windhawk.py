@@ -122,8 +122,10 @@ def applied(desired, flat_current):
 # --- YAML for Windhawk's "Textual mode" ----------------------------------------------------
 
 def _scalar(value):
+    # Windhawk stores on/off settings as numbers and rejects YAML booleans
+    # ("Type mismatch ... expected number, but got boolean").
     if isinstance(value, bool):
-        return "true" if value else "false"
+        return "1" if value else "0"
     if isinstance(value, int):
         return str(value)
     if value is None:
