@@ -7,8 +7,10 @@
 > **Plasma Style:** baseado no **Breeze** (tema `default` do Plasma, do **KDE Visual Design Group**, licença **LGPL**). Do Breeze vieram os nomes de arquivos, prefixos, elementos `hint-*` e margens; o desenho é refeito por `targets/plasma-style/generate.py`.
 >
 > **Páginas web (Stylus):** os estilos vêm do **[Catppuccin Userstyles](https://github.com/catppuccin/userstyles)** (**Catppuccin Org**, licença **MIT**, texto em `targets/stylus/LICENSE-catppuccin-userstyles`), fixados como submodule em `vendor/catppuccin-userstyles`. `targets/stylus/generate.py` troca só a paleta (e o header) de cada estilo; o CSS de cada site é do Catppuccin.
+>
+> **YASB (Windows):** `targets/yasb/templates/gibi.css` redefine as variáveis dos dois estilos que acompanham o **[YASB](https://github.com/amnweb/yasb)** (**amnweb**, licença **MIT**): o "i3-style" (`--bar_bg`, `--text`...) e o do assistente (`--yasb-*`). Só os nomes vêm do YASB; os valores e as regras são do Gibi.
 
-Tema retro-moderno para **Arch Linux / CachyOS com KDE Plasma 6**: marrons quentes, texto bege de baixo contraste, sensação de revista antiga e um acento amarelo vivo usado com parcimônia. "Gibi" é um codinome provisório. O nome fica em um único lugar (`palette.toml → [theme]`), então renomear é trocar `id`/`name` lá e rodar `./install.sh` de novo.
+Tema retro-moderno para **Arch Linux / CachyOS com KDE Plasma 6**, e desde a W1 também para o **Windows 11** (ver [Windows](#windows-w1)): marrons quentes, texto bege de baixo contraste, sensação de revista antiga e um acento amarelo vivo usado com parcimônia. "Gibi" é um codinome provisório. O nome fica em um único lugar (`palette.toml → [theme]`), então renomear é trocar `id`/`name` lá e rodar `./install.sh` de novo.
 
 ## Instalação
 
@@ -185,18 +187,70 @@ O Ghostty (>= 1.2) lê `~/.config/ghostty/config` e **depois** `config.ghostty`,
 - **Stylus: reimportar.** Ainda não confirmado se o Stylus atualiza ou duplica um estilo com o mesmo `@namespace`. Até confirmar: apague os "… Gibi" antes de importar uma versão nova.
 - **Stylus: bug do upstream corrigido.** `pronouns.cc` e `google-drive` chamam `#lib.rgbify(...)` sem o `[]` em 6 propriedades. O less 4.2.2 (o do upstream) gerava `[object Object]` ali; o less do Stylus recusa o estilo inteiro ("Rulesets cannot be evaluated on a property"), inclusive nos originais do Catppuccin. O gerador acrescenta o `[]` (`fix_upstream` em `generate.py`), e os 134 compilam no less 4.2.2 e no 4.9.
 
+## Windows (W1)
+
+Mesmo repo, mesmo `palette.toml`, mesmas regras de cor. Plano completo em `PHASE-WindowsOnly.md`; o que foi testado e decidido antes de escrever os alvos está em `docs/SPIKE-S0.md`. A W1 é a camada segura: **nada pede admin**. Stylers do Windhawk (W2) e `.msstyles` (W3) ainda não existem.
+
+Requisitos: Windows 11 e Python >= 3.11 (instalação por usuário serve, mesmo fora do PATH: o `install.ps1` procura em `py -3`, `python` e `%LOCALAPPDATA%\Programs\Python\`; ou defina `GIBI_PYTHON`). Sem Python: `winget install --id Python.Python.3.13 --scope user`.
+
+```powershell
+git clone --recursive <repo> gibi-theme; cd gibi-theme
+# O Windows não roda .ps1 baixado sem liberar; -ExecutionPolicy Bypass vale só para este comando.
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -DryRun     # mostra o que faria
+powershell -ExecutionPolicy Bypass -File .\install.ps1             # aplica os alvos detectados
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Only yasb,windows-terminal
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -List
+powershell -ExecutionPolicy Bypass -File .\uninstall.ps1 -DryRun   # mostra o que restauraria
+powershell -ExecutionPolicy Bypass -File .\uninstall.ps1           # restaura arquivos e registro
+powershell -ExecutionPolicy Bypass -File .\tests\selftest.ps1      # prova tudo em pasta e chave temporárias
+```
+
+Depois do primeiro install, faça **logoff/login** uma vez e siga `docs/CHECKLIST-W1.md`. Screenshots: `tests\screenshot.ps1 -Name <app> [-Window]`.
+
+| Alvo | O que faz |
+|---|---|
+| `win-fonts` | Inter (v4.1) e CaskaydiaCove Nerd Font (v3.5.1) **instaladas só para o seu usuário**, baixadas dos releases oficiais com SHA-256 fixado (cache em `%LOCALAPPDATA%\gibi\cache`). Fonte já instalada para todos os usuários é pulada. |
+| `win-colors` | Modo escuro e cor de destaque `accent.primary` (`#FFEA00`) no registro (HKCU). "Cor de destaque no Iniciar/barra de tarefas" e "nas barras de título" ficam **desligadas**, senão o amarelo pintaria áreas grandes (regra 3.4.1). |
+| `windows-terminal` | Fragmento em `%LOCALAPPDATA%\Microsoft\Windows Terminal\Fragments\gibi\` com o esquema `Gibi` (ANSI igual ao Ghostty) e a fonte mono nos perfis Windows PowerShell e Prompt de Comando. O `settings.json` não é tocado. Vale para Store, Preview e instalação sem pacote. |
+| `yasb` | `gibi.css` em `%USERPROFILE%\.config\yasb\` (ou `YASB_CONFIG_HOME`) e um `@import "gibi.css";` num bloco gerenciado **no fim** do `styles.css`. O `config.yaml` não é tocado. Recolore a barra pelas variáveis do estilo do YASB e acrescenta o efeito de tecla nos widgets. |
+| `brave` | A mesma extensão de tema do Linux, em `%LOCALAPPDATA%\gibi\brave-theme` (carregar sem compactação, como no Linux). |
+| `stylus` | O mesmo `import.json`, em `%LOCALAPPDATA%\gibi\stylus\import.json`. |
+
+O que muda em relação ao Linux:
+
+- **Estado e backups** em `%LOCALAPPDATA%\gibi\state\` (no Linux, `~/.local/state/gibi/`). Mesmo `manifest.json`, agora com o valor antigo de cada chave do registro; o `uninstall` devolve o valor ou apaga a chave/valor que não existia.
+- **`copy` no lugar de `symlink`:** symlink no Windows pede admin ou modo desenvolvedor. A mudança de conteúdo é detectada comparando a cópia com `build/`.
+- **Registro só em HKCU** (o backend recusa qualquer outra raiz), o equivalente do `kwriteconfig6`.
+- **Bloco gerenciado preserva a quebra de linha** do arquivo do usuário (o `styles.css` em LF continua LF).
+- Alvos Linux não são renderizados nem listados no Windows, e vice-versa (`platforms` no `target.toml`).
+
+Limitações conhecidas (W1):
+
+- **Cor de destaque pode precisar de logoff.** O Windows não documenta como avisar todos os componentes; o alvo grava o registro e manda `WM_SETTINGCHANGE`, mas o spike não pôde confirmar ao vivo se isso basta (`docs/SPIKE-S0.md` §2). Os tons claros/escuros do destaque são uma mistura simples com branco/preto, não o algoritmo do Windows (que não é público).
+- **Fonte da interface do Windows continua Segoe UI.** Trocar exige HKLM (admin); a W1 só instala as fontes para os apps que o tema configura.
+- **Nome GDI da Nerd Font:** o Windows lista a mono como `CaskaydiaCove NF`; o Windows Terminal aceita o nome do `palette.toml` (`CaskaydiaCove Nerd Font`).
+- **Windows Terminal:** só os dois perfis padrão recebem o esquema; nos outros, escolha "Gibi" pela interface. Esquema ou fonte definidos por você no `settings.json` vencem o fragmento.
+- **YASB:** o efeito de tecla depende de como o Qt desenha bordas de cores diferentes com raio; está no checklist para validar. O `gibi.css` conhece as variáveis dos dois estilos do YASB; um `styles.css` com nomes próprios só recebe as regras genéricas (barra, `.widget-container`, menus). A fonte da barra não muda (os ícones dependem da fonte que você escolheu).
+- **Uninstall de fonte em uso:** se o terminal ou o YASB estiverem com a fonte aberta, o arquivo não sai; o uninstall avisa e basta apagá-lo depois de fechar o app (ou após logoff).
+- **Apps WinUI** (Configurações etc.) só recebem o modo escuro e a cor de destaque, sem efeito de tecla (`PHASE-WindowsOnly.md` §8).
+- **Testes Linux:** a W1 foi escrita numa máquina Windows sem WSL. `tests/linux-invariants.py` prova que os caminhos novos ficam inertes no Linux, mas `tests/selftest.sh` e os checks das fases 2 a 4 precisam rodar numa máquina Arch.
+
 ## Estrutura
 
 ```
 palette.toml        fonte única: cores, forma, tipografia, nome, widget style
 install.sh          entrada fina → python3 -m tooling apply
 uninstall.sh        entrada fina → python3 -m tooling restore
-tooling/            Python stdlib: palette, render, contrast, targets, backup, blocks, kde, icons, svgslice
+install.ps1         Windows: entrada fina → python -m tooling apply (acha o Python, liga PYTHONUTF8)
+uninstall.ps1       Windows: entrada fina → python -m tooling restore
+tooling/            Python stdlib: palette, render, contrast, targets, backup, blocks, kde, icons, svgslice, platform
+tooling/backends/   Windows: registry (winreg), fonts (instalação por usuário), winapi (ctypes)
 targets/<alvo>/     target.toml + templates/ com placeholders ${token}
 vendor/             submodules (catppuccin-userstyles, lido pelo alvo stylus)
 build/              saída renderizada (ignorada pelo git)
-docs/               checklists visuais das fases 1 a 4, notas da fase 2, filtros do stylus, amostra ANSI
-tests/              selftest.sh (fundação + stylus), kvantum-{check,preview}.py, plasma-style-{check,preview}.py, stylus-check.py
+docs/               checklists visuais das fases 1 a 4 e da W1, spike S0, notas da fase 2, filtros do stylus, amostra ANSI
+tests/              selftest.sh (fundação + stylus), kvantum-{check,preview}.py, plasma-style-{check,preview}.py, stylus-check.py,
+                    selftest.ps1 + linux-invariants.py + screenshot.ps1 + win-accent-probe.ps1 (Windows)
 ```
 
 Detalhes de contrato (`palette.toml`, templates, `target.toml`) em `ARCHITECTURE.md`. Além dos campos de lá, o `target.toml` aceita:
@@ -207,6 +261,13 @@ Detalhes de contrato (`palette.toml`, templates, `target.toml`) em `ARCHITECTURE
 - `[[files]]` em `copy`: `ignore`, lista de nomes que o próprio app cria no destino e que não contam como diferença (ex.: o `Cached Theme.pak` que o Brave grava na pasta do tema);
 - `order` (ordem de execução) e `message` (texto mostrado quando o alvo muda algo);
 - `generate`: script Python (relativo ao alvo) que roda antes do render e (re)escreve `templates/` a partir da paleta. Deve ser determinístico e só gravar o que mudou.
+- `platforms`: `["linux"]` (padrão, quando o campo falta), `["windows"]` ou os dois. Alvo de outra plataforma é pulado sem erro;
+- `[windows]`: tabela cujas chaves substituem as do topo quando roda no Windows (ex.: `brave` e `stylus` trocam `dest`, `message` e a detecção). Em `[[windows.files]]`, os `[[files]]` do Windows;
+- `detect_paths`: lista de caminhos; o alvo é detectado se algum existir (sem shell). Substitui um `detect` herdado;
+- `[[registry]]` (Windows): `key` (só `HKCU\...`), `name`, `type` (`dword`, `qword`, `string`, `expand_string`, `binary`), `value` | `delete = true`, e `format` para cores: `abgr`/`argb` (com `alpha` 0-255), `accent-palette` (os 32 bytes do `AccentPalette`) ou `shade:N` (o tom N dele, em ABGR);
+- `[[fonts]]` (Windows): `family` (só para mensagens), `source` (URL ou caminho relativo ao alvo), `sha256` e `files` (glob dos arquivos de fonte dentro do `.zip`/`.tar.*`);
+- `[[post]] notify = "<área>"` (Windows): `WM_SETTINGCHANGE` com essa área (ex.: `ImmersiveColorSet`), também no uninstall;
+- Placeholders só do Windows: `${user_data}` (`%LOCALAPPDATA%\gibi`), `${local_appdata}`, `${yasb_config}`. Caminhos aceitam `%VAR%` no Windows.
 
 ## Licença
 
