@@ -9,8 +9,10 @@
 > **Páginas web (Stylus):** os estilos vêm do **[Catppuccin Userstyles](https://github.com/catppuccin/userstyles)** (**Catppuccin Org**, licença **MIT**, texto em `targets/stylus/LICENSE-catppuccin-userstyles`), fixados como submodule em `vendor/catppuccin-userstyles`. `targets/stylus/generate.py` troca só a paleta (e o header) de cada estilo; o CSS de cada site é do Catppuccin.
 >
 > **YASB (Windows):** `targets/yasb/templates/gibi.css` redefine as variáveis dos dois estilos que acompanham o **[YASB](https://github.com/amnweb/yasb)** (**amnweb**, licença **MIT**): o "i3-style" (`--bar_bg`, `--text`...) e o do assistente (`--yasb-*`). Só os nomes vêm do YASB; os valores e as regras são do Gibi.
+>
+> **Windhawk (Windows):** os alvos `windhawk-*` geram configurações para os mods *Windows 11 Start Menu Styler*, *Notification Center Styler* e *File Explorer Styler*, de **m417z** (autor do **[Windhawk](https://windhawk.net)**). Os nomes dos elementos XAML vêm dos temas embutidos nesses mods (`TintedGlass`, `TranslucentStartMenu`); nenhum código foi copiado, e as cores são da paleta.
 
-Tema retro-moderno para **Arch Linux / CachyOS com KDE Plasma 6**, e desde a W1 também para o **Windows 11** (ver [Windows](#windows-w1)): marrons quentes, texto bege de baixo contraste, sensação de revista antiga e um acento amarelo vivo usado com parcimônia. "Gibi" é um codinome provisório. O nome fica em um único lugar (`palette.toml → [theme]`), então renomear é trocar `id`/`name` lá e rodar `./install.sh` de novo.
+Tema retro-moderno para **Arch Linux / CachyOS com KDE Plasma 6**, e desde a W1 também para o **Windows 11** (ver [Windows](#windows)): marrons quentes, texto bege de baixo contraste, sensação de revista antiga e um acento amarelo vivo usado com parcimônia. "Gibi" é um codinome provisório. O nome fica em um único lugar (`palette.toml → [theme]`), então renomear é trocar `id`/`name` lá e rodar `./install.sh` de novo.
 
 ## Instalação
 
@@ -187,9 +189,9 @@ O Ghostty (>= 1.2) lê `~/.config/ghostty/config` e **depois** `config.ghostty`,
 - **Stylus: reimportar.** Ainda não confirmado se o Stylus atualiza ou duplica um estilo com o mesmo `@namespace`. Até confirmar: apague os "… Gibi" antes de importar uma versão nova.
 - **Stylus: bug do upstream corrigido.** `pronouns.cc` e `google-drive` chamam `#lib.rgbify(...)` sem o `[]` em 6 propriedades. O less 4.2.2 (o do upstream) gerava `[object Object]` ali; o less do Stylus recusa o estilo inteiro ("Rulesets cannot be evaluated on a property"), inclusive nos originais do Catppuccin. O gerador acrescenta o `[]` (`fix_upstream` em `generate.py`), e os 134 compilam no less 4.2.2 e no 4.9.
 
-## Windows (W1)
+## Windows
 
-Mesmo repo, mesmo `palette.toml`, mesmas regras de cor. Plano completo em `PHASE-WindowsOnly.md`; o que foi testado e decidido antes de escrever os alvos está em `docs/SPIKE-S0.md`. A W1 é a camada segura: **nada pede admin**. Stylers do Windhawk (W2) e `.msstyles` (W3) ainda não existem.
+Mesmo repo, mesmo `palette.toml`, mesmas regras de cor. Plano completo em `PHASE-WindowsOnly.md`; o que foi testado e decidido antes de escrever os alvos está em `docs/SPIKE-S0.md` (W1) e `docs/SPIKE-S1.md` (W2). A W1 e a W2 são as camadas seguras: **nada pede admin**. O `.msstyles` (W3) ainda não existe.
 
 Requisitos: Windows 11 e Python >= 3.11 (instalação por usuário serve, mesmo fora do PATH: o `install.ps1` procura em `py -3`, `python` e `%LOCALAPPDATA%\Programs\Python\`; ou defina `GIBI_PYTHON`). Sem Python: `winget install --id Python.Python.3.13 --scope user`.
 
@@ -205,7 +207,7 @@ powershell -ExecutionPolicy Bypass -File .\uninstall.ps1           # restaura ar
 powershell -ExecutionPolicy Bypass -File .\tests\selftest.ps1      # prova tudo em pasta e chave temporárias
 ```
 
-Depois do primeiro install, faça **logoff/login** uma vez e siga `docs/CHECKLIST-W1.md`. Screenshots: `tests\screenshot.ps1 -Name <app> [-Window]`.
+Depois do primeiro install, siga `docs/CHECKLIST-W1.md` e `docs/CHECKLIST-W2.md`. Screenshots: `tests\screenshot.ps1 -Name <app> [-Window]`.
 
 | Alvo | O que faz |
 |---|---|
@@ -215,6 +217,11 @@ Depois do primeiro install, faça **logoff/login** uma vez e siga `docs/CHECKLIS
 | `yasb` | `gibi.css` em `%USERPROFILE%\.config\yasb\` (ou `YASB_CONFIG_HOME`) e um `@import "gibi.css";` num bloco gerenciado **no fim** do `styles.css`. O `config.yaml` não é tocado. Recolore a barra pelas variáveis do estilo do YASB e acrescenta o efeito de tecla nos widgets. |
 | `brave` | A mesma extensão de tema do Linux, em `%LOCALAPPDATA%\gibi\brave-theme` (carregar sem compactação, como no Linux). |
 | `stylus` | O mesmo `import.json`, em `%LOCALAPPDATA%\gibi\stylus\import.json`. |
+| `windhawk-start` | **W2.** Configuração do mod *Windows 11 Start Menu Styler*: painel do Iniciar em `base.90` a 0.88 com blur, borda `base.70`, cantos de 10px, busca como campo afundado. Só cor, sem mudar o layout. |
+| `windhawk-notifications` | **W2.** *Windows 11 Notification Center Styler*: central, calendário, configurações rápidas, mídia, notificações e jump lists como os popups do Plasma Style. |
+| `windhawk-explorer` | **W2.** *Windows 11 File Explorer Styler*: abas, barra de comandos, endereço/busca e as telas Início/Galeria em marrom opaco. Substitui a configuração que o mod tinha (a anterior vai para o backup). |
+
+**Windhawk (W2): passo manual.** A configuração dos mods mora em HKLM e só admin grava lá (`docs/SPIKE-S1.md`), então o tema não aplica nada no Windhawk. O install gera `%LOCALAPPDATA%\gibi\windhawk\<mod>.yaml` e imprime o passo a passo: copiar com `Get-Content ... | Set-Clipboard`, abrir o mod > Configurações > **Textual mode**, colar por cima e **Salvar configurações** (os dois stylers que faltarem: instale antes em Windhawk > Explorar). A cada install, o tooling lê (só lê) a configuração atual e diz se o mod já está com a do Gibi ou se falta colar. Antes, ele exporta a configuração que o mod tinha para o backup, e o `uninstall` mostra esse arquivo para colar de volta. O Taskbar Styler não é tocado (a barra é o YASB).
 
 O que muda em relação ao Linux:
 
@@ -224,16 +231,19 @@ O que muda em relação ao Linux:
 - **Bloco gerenciado preserva a quebra de linha** do arquivo do usuário (o `styles.css` em LF continua LF).
 - Alvos Linux não são renderizados nem listados no Windows, e vice-versa (`platforms` no `target.toml`).
 
-Limitações conhecidas (W1):
+Limitações conhecidas (W1 e W2):
 
-- **Cor de destaque pode precisar de logoff.** O Windows não documenta como avisar todos os componentes; o alvo grava o registro e manda `WM_SETTINGCHANGE`, mas o spike não pôde confirmar ao vivo se isso basta (`docs/SPIKE-S0.md` §2). Os tons claros/escuros do destaque são uma mistura simples com branco/preto, não o algoritmo do Windows (que não é público).
+- **Cor de destaque:** nesta máquina, registro + `WM_SETTINGCHANGE` bastou, sem logoff (`docs/SPIKE-S0.md`, resultado ao vivo). Se algum componente ficar com a cor antiga, um logoff resolve. Os tons claros/escuros do destaque são uma mistura simples com branco/preto, não o algoritmo do Windows (que não é público).
+- **Windhawk sem automação:** cada mudança na paleta pede colar os três YAML de novo (o install avisa com `pendente`). O uninstall também não mexe no Windhawk: ele só aponta o arquivo para colar de volta.
+- **Explorer pela metade:** o File Explorer Styler pinta a parte XAML (abas, barras, Início, Galeria). A lista de arquivos e a árvore lateral são Win32 e continuam no escuro padrão do Windows até a W3.
+- **Alvos XAML podem mudar com atualizações do Windows:** os nomes dos elementos (`Border#AcrylicBorder`, `Grid#NotificationCenterGrid`...) vêm dos temas dos próprios stylers e funcionam no build 26300; uma atualização pode renomear algum e a peça volta ao padrão, sem quebrar nada.
 - **Fonte da interface do Windows continua Segoe UI.** Trocar exige HKLM (admin); a W1 só instala as fontes para os apps que o tema configura.
 - **Nome GDI da Nerd Font:** o Windows lista a mono como `CaskaydiaCove NF`; o Windows Terminal aceita o nome do `palette.toml` (`CaskaydiaCove Nerd Font`).
 - **Windows Terminal:** só os dois perfis padrão recebem o esquema; nos outros, escolha "Gibi" pela interface. Esquema ou fonte definidos por você no `settings.json` vencem o fragmento.
 - **YASB:** o efeito de tecla depende de como o Qt desenha bordas de cores diferentes com raio; está no checklist para validar. O `gibi.css` conhece as variáveis dos dois estilos do YASB; um `styles.css` com nomes próprios só recebe as regras genéricas (barra, `.widget-container`, menus). A fonte da barra não muda (os ícones dependem da fonte que você escolheu).
 - **Uninstall de fonte em uso:** se o terminal ou o YASB estiverem com a fonte aberta, o arquivo não sai; o uninstall avisa e basta apagá-lo depois de fechar o app (ou após logoff).
 - **Apps WinUI** (Configurações etc.) só recebem o modo escuro e a cor de destaque, sem efeito de tecla (`PHASE-WindowsOnly.md` §8).
-- **Testes Linux:** a W1 foi escrita numa máquina Windows sem WSL. `tests/linux-invariants.py` prova que os caminhos novos ficam inertes no Linux, mas `tests/selftest.sh` e os checks das fases 2 a 4 precisam rodar numa máquina Arch.
+- **Testes Linux:** a W1 e a W2 foram escritas numa máquina Windows sem WSL. `tests/linux-invariants.py` prova que os caminhos novos ficam inertes no Linux, mas `tests/selftest.sh` e os checks das fases 2 a 4 precisam rodar numa máquina Arch.
 
 ## Estrutura
 
@@ -248,9 +258,9 @@ tooling/backends/   Windows: registry (winreg), fonts (instalação por usuário
 targets/<alvo>/     target.toml + templates/ com placeholders ${token}
 vendor/             submodules (catppuccin-userstyles, lido pelo alvo stylus)
 build/              saída renderizada (ignorada pelo git)
-docs/               checklists visuais das fases 1 a 4 e da W1, spike S0, notas da fase 2, filtros do stylus, amostra ANSI
+docs/               checklists visuais das fases 1 a 4, da W1 e da W2, spikes S0 e S1, notas da fase 2, filtros do stylus, amostra ANSI
 tests/              selftest.sh (fundação + stylus), kvantum-{check,preview}.py, plasma-style-{check,preview}.py, stylus-check.py,
-                    selftest.ps1 + linux-invariants.py + screenshot.ps1 + win-accent-probe.ps1 (Windows)
+                    selftest.ps1 + linux-invariants.py + windhawk-check.py + screenshot.ps1 + win-accent-probe.ps1 (Windows)
 ```
 
 Detalhes de contrato (`palette.toml`, templates, `target.toml`) em `ARCHITECTURE.md`. Além dos campos de lá, o `target.toml` aceita:
@@ -267,7 +277,8 @@ Detalhes de contrato (`palette.toml`, templates, `target.toml`) em `ARCHITECTURE
 - `[[registry]]` (Windows): `key` (só `HKCU\...`), `name`, `type` (`dword`, `qword`, `string`, `expand_string`, `binary`), `value` | `delete = true`, e `format` para cores: `abgr`/`argb` (com `alpha` 0-255), `accent-palette` (os 32 bytes do `AccentPalette`) ou `shade:N` (o tom N dele, em ABGR);
 - `[[fonts]]` (Windows): `family` (só para mensagens), `source` (URL ou caminho relativo ao alvo), `sha256` e `files` (glob dos arquivos de fonte dentro do `.zip`/`.tar.*`);
 - `[[post]] notify = "<área>"` (Windows): `WM_SETTINGCHANGE` com essa área (ex.: `ImmersiveColorSet`), também no uninstall;
-- Placeholders só do Windows: `${user_data}` (`%LOCALAPPDATA%\gibi`), `${local_appdata}`, `${yasb_config}`. Caminhos aceitam `%VAR%` no Windows.
+- `[windhawk]` (Windows, W2): `mod` (id do mod), `title` (nome exibido), `snippet` (onde gravar o YAML) e `[windhawk.settings]` com a configuração do mod em TOML, como no schema dele. Strings passam pelo render; as constantes do Windhawk (`$Bg`) se escrevem `$$Bg`;
+- Placeholders só do Windows: `${user_data}` (`%LOCALAPPDATA%\gibi`), `${local_appdata}`, `${yasb_config}` e `${surface_float_opacity_hexalpha}` (a opacidade dos popups como alfa hex, para `#AARRGGBB`). Caminhos aceitam `%VAR%` no Windows.
 
 ## Licença
 

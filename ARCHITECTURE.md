@@ -237,7 +237,7 @@ Modos:
 - Decoração de janela própria em SVG (Aurorae).
 - Tema dinâmico baseado em wallpaper (estilo Matugen).
 - Pacote no AUR.
-- ~~Windows~~: entrou com `PHASE-WindowsOnly.md` (mesmo repo, mesmo `palette.toml`, alvos com `platforms = ["windows"]`). A fase **W1** (sem admin: modo escuro e cor de destaque, fontes por usuário, Windows Terminal, YASB, Brave e Stylus) está feita; W2 (stylers do Windhawk) e W3 (`.msstyles`, exige admin) ainda não. O que muda no Windows (estado em `%LOCALAPPDATA%\gibi\state`, `copy` no lugar de `symlink`, backend `registry` no lugar do `kwrite`) está no `README.md`, seção Windows. Fora de escopo continuam macOS, Windows 10 e outros DEs (GNOME, Hyprland).
+- ~~Windows~~: entrou com `PHASE-WindowsOnly.md` (mesmo repo, mesmo `palette.toml`, alvos com `platforms = ["windows"]`). As fases **W1** (sem admin: modo escuro e cor de destaque, fontes por usuário, Windows Terminal, YASB, Brave e Stylus) e **W2** (stylers do Windhawk, por configuração gerada e colada à mão, porque gravar no Windhawk exige admin) estão feitas; a W3 (`.msstyles`, exige admin) ainda não. O que muda no Windows (estado em `%LOCALAPPDATA%\gibi\state`, `copy` no lugar de `symlink`, backend `registry` no lugar do `kwrite`) está no `README.md`, seção Windows. Fora de escopo continuam macOS, Windows 10 e outros DEs (GNOME, Hyprland).
 - Tema claro.
 - **Obsidian**: continua com o tema Primary original, sem snippet nem alteração. Ele é a referência visual do projeto, não um alvo.
 - Alvos da lista "depois": btop, fastfetch, starship, VS Code, Vesktop, Spicetify, cursor, SDDM, splash. A estrutura de `targets/` deve tornar cada um deles "só mais uma pasta".
