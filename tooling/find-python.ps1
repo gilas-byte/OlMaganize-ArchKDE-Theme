@@ -4,6 +4,8 @@
 
 function Find-GibiPython {
     $candidates = [System.Collections.Generic.List[object]]::new()
+    # GIBI_PYTHON: explicit interpreter (unusual install location; the selftest sets it).
+    if ($env:GIBI_PYTHON) { $candidates.Add(@($env:GIBI_PYTHON)) }
     foreach ($py in @((Get-Command py -ErrorAction SilentlyContinue).Source,
                       "$env:LOCALAPPDATA\Programs\Python\Launcher\py.exe")) {
         if ($py -and (Test-Path $py)) { $candidates.Add(@($py, '-3')) }

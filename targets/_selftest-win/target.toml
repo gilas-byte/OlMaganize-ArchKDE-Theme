@@ -1,0 +1,78 @@
+name = "_selftest-win"
+description = "Alvo de teste do Windows: todos os modos em pasta temporária e chave de teste"
+platforms = ["windows"]
+order = 0
+# Só roda com --only, e só pelo tests/selftest.ps1, que aponta %LOCALAPPDATA% para uma pasta
+# temporária e liga GIBI_REGISTRY_REDIRECT. As chaves abaixo já são de teste mesmo sem isso.
+
+# symlink vira copy no Windows.
+[[files]]
+src = "templates/sample.conf"
+dest = "%LOCALAPPDATA%/${theme_id}-selftest/sample.conf"
+mode = "symlink"
+
+[[files]]
+src = "templates/sample.svg"
+dest = "%LOCALAPPDATA%/${theme_id}-selftest/sample.svg"
+mode = "copy"
+
+[[files]]
+src = "templates/block.conf"
+dest = "%LOCALAPPDATA%/${theme_id}-selftest/host.conf"
+mode = "managed-block"
+
+[[files]]
+src = "templates/block.css"
+dest = "%LOCALAPPDATA%/${theme_id}-selftest/host.css"
+mode = "managed-block"
+comment = "/*"
+position = "bottom"
+
+[[registry]]
+key = 'HKCU\Software\gibi-selftest\Values'
+name = "Dword"
+type = "dword"
+value = 0
+
+[[registry]]
+key = 'HKCU\Software\gibi-selftest\Values'
+name = "Accent"
+type = "dword"
+format = "abgr"
+value = "${accent_primary}"
+
+[[registry]]
+key = 'HKCU\Software\gibi-selftest\Values'
+name = "Name"
+type = "string"
+value = "${theme_name}"
+
+[[registry]]
+key = 'HKCU\Software\gibi-selftest\Values'
+name = "Palette"
+type = "binary"
+format = "accent-palette"
+value = "${accent_primary}"
+
+[[registry]]
+key = 'HKCU\Software\gibi-selftest\Values'
+name = "Obsolete"
+delete = true
+
+# Chave que não existe antes: o restore tem que apagá-la.
+[[registry]]
+key = 'HKCU\Software\gibi-selftest\Created\Deep'
+name = "Value"
+type = "string"
+value = "${theme_id}"
+
+# Fixture gerado por tests/make-font-fixture.py (não é fonte de verdade).
+[[fonts]]
+family = "Gibi Selftest"
+source = "fixtures/fake-font.zip"
+sha256 = "f6a2753732703313837ca3f5cb5c69a2b5216230065ad79cf784e7b090349b96"
+files = "fonts/GibiSelftest-*.ttf"
+
+# lParam que nenhum app reconhece: exercita o caminho sem efeito colateral.
+[[post]]
+notify = "GibiSelftest"
