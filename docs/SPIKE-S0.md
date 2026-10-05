@@ -60,6 +60,16 @@ Tons que o Windows calculou para `#FFB900`: L1 `#FFC20D`, L2 `#FFD52A`, L3 `#FFE
 
 **Achado: nome de família.** Na Nerd Font v3 o nome de família GDI (name ID 1) é **`CaskaydiaCove NF`**. `CaskaydiaCove Nerd Font` (o `font.mono` do `palette.toml`) é só o nome tipográfico (ID 16). O Windows Terminal usa DirectWrite, que acha o nome tipográfico, então o fragmento usa `${font_mono}` igual ao Linux. Apps GDI (e Qt em modo GDI) só acham `CaskaydiaCove NF`. O Inter não tem esse problema (ID 1 = `Inter` no Regular). **A verificar ao vivo:** o terminal não avisa "fonte não encontrada".
 
+## Resultado ao vivo (install real, 2026-10-04)
+
+Feito com `.\install.ps1` depois do spike, com backup em `%LOCALAPPDATA%\gibi\state\backups\`.
+
+- **Cor de destaque: registro + `WM_SETTINGCHANGE` basta**, pelo menos para o que o WinRT reporta: num processo novo, sem logoff, `UISettings` deu Accent `#FFEA00`, AccentLight2 `#FFF04C`, AccentDark1 `#D9C700` (os tons calculados pelo alvo). Se o Explorer, o Iniciar ou apps já abertos acompanham sem logoff, só o checklist diz.
+- **Fontes:** as 30 entraram em HKCU, e o .NET (GDI) já lista `Inter` e `CaskaydiaCove NF` na mesma sessão, sem logoff.
+- **Windows Terminal:** fragmento gravado, `settings.json` com o mesmo SHA-256 de antes. Falta confirmar na tela que o terminal não mostra aviso.
+- **YASB:** o watcher registrou `Stylesheet modified` logo depois do install (recarregou sozinho).
+- Segunda execução: todos os alvos em `sem mudanças`, nenhum backup novo.
+
 ## Achados extras
 
 - **Python fora do PATH.** `python` no PATH é só o atalho da Microsoft Store. Existe `%LOCALAPPDATA%\Programs\Python\Python312\python.exe` (3.12.10) e o `py.exe` em `...\Python\Launcher\`, também fora do PATH. O `install.ps1` procura nessa ordem: `py -3`, `python` (ignorando o atalho da Store), `%LOCALAPPDATA%\Programs\Python\Python3*\python.exe`.
