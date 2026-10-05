@@ -7,8 +7,9 @@ import sys
 import tomllib
 from pathlib import Path
 
-from . import blocks, kde
-from .backup import BackupSession, copy_path, remove_path, state_dir
+from . import blocks, kde, platform
+from .backup import (BackupSession, copy_path, read_text_keep_newlines, remove_path, state_dir,
+                     write_text_newlines)
 from .render import RenderError, render_text, render_tree
 
 MODES = ("symlink", "copy", "managed-block")
@@ -22,7 +23,13 @@ class Target:
     def __init__(self, path):
         self.dir = Path(path)
         with open(self.dir / "target.toml", "rb") as f:
-            self.meta = tomllib.load(f)
+            raw = tomllib.load(f)
+        try:
+            self.platforms = platform.platforms_of(raw)
+        except ValueError as err:
+            raise TargetError(f"{self.dir.name}: {err}") from None
+        # The [windows] table (if any) replaces top-level keys when running on Windows.
+        self.meta = platform.overlay(raw)
         self.name = self.meta.get("name", self.dir.name)
         self.order = self.meta.get("order", 50)
         self.hidden = self.dir.name.startswith("_")
@@ -30,6 +37,10 @@ class Target:
     @property
     def description(self):
         return self.meta.get("description", "")
+
+    @property
+    def supported(self):
+        return platform.current() in self.platforms
 
     def packages(self):
         return list(self.meta.get("packages", [])), list(self.meta.get("aur_packages", []))
@@ -41,8 +52,10 @@ def load_targets(root):
 
 
 def select(targets, only):
+    """Targets to run. Without --only, targets of other platforms are left out silently;
+    with --only they stay and run() reports them as skipped."""
     if not only:
-        return [t for t in targets if not t.hidden]
+        return [t for t in targets if not t.hidden and t.supported]
     by_name = {t.name: t for t in targets}
     unknown = [n for n in only if n not in by_name]
     if unknown:
@@ -51,7 +64,8 @@ def select(targets, only):
 
 
 def missing_packages(names):
-    if not names:
+    # Windows: no target needs packages yet (winget support comes with the first one that does).
+    if not names or platform.is_windows():
         return []
     result = subprocess.run(["pacman", "-T", *names], capture_output=True, text=True)
     return result.stdout.split()
@@ -101,6 +115,7 @@ class Runner:
         self.root = Path(root)
         self.palette = palette
         self.tokens = palette.tokens()
+        self.tokens.update(platform.tokens(palette.id))
         self.dry_run = dry_run
         self.out = out
         self.build = self.root / "build"
@@ -138,6 +153,11 @@ class Runner:
             render_tree(templates, self.build / target.name, self.tokens)
 
     def detect(self, target):
+        # detect_paths: detected if any of these exists (no shell; the way Windows targets detect).
+        paths = target.meta.get("detect_paths")
+        if paths:
+            return any(Path(platform.expand(self.t(p, f"{target.name}: detect_paths"))).exists()
+                       for p in paths)
         cmd = target.meta.get("detect")
         if not cmd:
             return True
@@ -189,9 +209,16 @@ class Runner:
             digest.update(path.relative_to(root).as_posix().encode() + b"\0" + path.read_bytes())
         return digest.hexdigest()
 
+    @staticmethod
+    def _mode(spec):
+        # Symlinks on Windows need admin or developer mode: copy instead (PHASE-WindowsOnly.md §6).
+        # Content changes are then caught by comparing the copy with build/.
+        mode = spec.get("mode", "symlink")
+        return "copy" if mode == "symlink" and platform.is_windows() else mode
+
     def _render_changed(self, target):
         """Hash atual se o conteúdo mudou desde o último apply de um alvo com symlink, senão None."""
-        if not any(spec.get("mode", "symlink") == "symlink" for spec in target.meta.get("files", [])):
+        if not any(self._mode(spec) == "symlink" for spec in target.meta.get("files", [])):
             return None
         current = self._fingerprint(target)
         path = self._fingerprint_path(target)
@@ -209,12 +236,22 @@ class Runner:
         if rendered and not files_changed:
             changes.append(f"conteúdo renderizado atualizado (build/{target.name})")
             files_changed = True
+        for spec in target.meta.get("fonts", []):
+            if self._fonts(target, spec, changes):
+                files_changed = True
         for spec in target.meta.get("keys", []):
             self._key(target, spec, changes)
+        for spec in target.meta.get("registry", []):
+            self._registry(target, spec, changes)
         for spec in target.meta.get("states", []):
             self._state(target, spec, changes, files_changed)
         if changes:
             for spec in target.meta.get("post", []):
+                if "notify" in spec:
+                    changes.append(f"avisar o Windows: {spec['notify']}")
+                    if not self.dry_run:
+                        self._notify(spec["notify"])
+                    continue
                 cmd = self.t(spec["cmd"], f"{target.name}: post")
                 changes.append(f"executar: {cmd}")
                 if not self.dry_run:
@@ -226,7 +263,7 @@ class Runner:
         return changes
 
     def _file(self, target, spec, changes):
-        mode = spec.get("mode", "symlink")
+        mode = self._mode(spec)
         if mode not in MODES:
             raise TargetError(f"modo inválido: {mode}")
         src = Path(spec["src"])
@@ -235,7 +272,7 @@ class Runner:
         built = self.build / target.name / Path(*src.parts[1:])
         if not built.exists():
             raise TargetError(f"arquivo renderizado não existe: {built}")
-        dest = Path(os.path.expanduser(self.t(spec["dest"], f"{target.name}: dest")))
+        dest = Path(platform.expand(self.t(spec["dest"], f"{target.name}: dest")))
         exists = dest.exists() or dest.is_symlink()
 
         if mode == "symlink":
@@ -260,7 +297,7 @@ class Runner:
             return True
 
         begin, end = blocks.markers(self.palette.id, spec.get("comment", "#"))
-        current = dest.read_text() if dest.is_file() else ""
+        current, newline = read_text_keep_newlines(dest) if dest.is_file() else ("", None)
         new = blocks.upsert(current, built.read_text(), begin, end, spec.get("position", "bottom"))
         # Só a quebra de linha final não conta: o gtkconfig do KDE reescreve o gtk.css sem
         # ela ao aplicar o Look-and-Feel, e o bloco continua intacto.
@@ -272,7 +309,7 @@ class Runner:
                      "created_dirs": _missing_dirs(dest)}
             self.session.record(entry, save_path=dest if exists else None)
             dest.parent.mkdir(parents=True, exist_ok=True)
-            dest.write_text(new)
+            write_text_newlines(dest, new, newline)
         return True
 
     def _record_file(self, target, dest, existed):
@@ -307,6 +344,95 @@ class Runner:
                              "group": group, "key": key, "old": current})
         kde.restore(file, group, key, desired)
 
+    # --- Windows: registro, fontes, avisos ------------------------------------------------
+
+    def _notify_areas(self, target):
+        return [spec["notify"] for spec in target.meta.get("post", []) if "notify" in spec]
+
+    @staticmethod
+    def _notify(area):
+        from .backends import winapi
+        if area == "fonts":
+            winapi.font_change()
+        else:
+            winapi.setting_change(area)
+
+    def _registry(self, target, spec, changes):
+        from .backends import registry
+        origin = f"{target.name}: registry {spec.get('name')}"
+        try:
+            sub = registry.split(self.t(spec["key"], origin))
+            name = self.t(spec["name"], origin)
+            want = None if spec.get("delete") else registry.desired(spec, self.t(spec["value"], origin))
+        except (registry.RegistryError, ValueError) as err:
+            raise TargetError(f"{origin}: {err}") from None
+        current = registry.read(sub, name)
+        if current == want:
+            return
+        changes.append(f"{registry.display(sub)} {name} = {registry.show(want)}")
+        if self.dry_run:
+            return
+        self.session.record({"kind": "registry", "target": target.name, "key": sub, "name": name,
+                             "old": current, "created_keys": registry.missing_keys(sub),
+                             "notify": self._notify_areas(target)})
+        registry.restore(sub, name, want)
+
+    def _fonts(self, target, spec, changes):
+        """Install the font files of one [[fonts]] entry for the current user."""
+        from .backends import fonts, registry, winapi
+        origin = f"{target.name}: fonts"
+        family = self.t(spec["family"], origin)
+        source = self.t(spec["source"], origin)
+        sha256 = spec["sha256"].lower()
+        pattern = spec["files"]
+        archive = fonts.locate(self.palette.id, source, sha256, target.dir)
+        if archive is None:
+            if self.dry_run:
+                changes.append(f"baixar {source} e instalar a fonte {family} ({pattern}) por usuário")
+                return True
+            try:
+                archive = fonts.fetch(self.palette.id, source, sha256)
+            except fonts.FontError as err:
+                raise TargetError(f"{origin}: {err}") from None
+            changes.append(f"baixado {source}")
+        try:
+            files = fonts.members(archive, pattern)
+            key = registry.split(fonts.FONTS_KEY)
+        except (fonts.FontError, registry.RegistryError, OSError) as err:
+            raise TargetError(f"{origin}: {err}") from None
+        changed = False
+        for filename, data in files:
+            try:
+                value = fonts.value_name(data)
+            except fonts.FontError as err:
+                raise TargetError(f"{origin}: {filename}: {err}") from None
+            if fonts.machine_has(value):
+                continue  # already installed for every user
+            dest = fonts.fonts_dir() / filename
+            want = {"type": "string", "data": str(dest)}
+            current = registry.read(key, value)
+            if current == want and fonts.same_file(dest, data):
+                continue
+            changes.append(f"fonte {family}: {dest}")
+            changed = True
+            if self.dry_run:
+                continue
+            existed = dest.exists()
+            self.session.record({"kind": "font", "target": target.name, "path": str(dest),
+                                 "key": key, "name": value, "old": current,
+                                 "created_keys": registry.missing_keys(key),
+                                 "created_dirs": _missing_dirs(dest), "notify": ["fonts"]},
+                                save_path=dest if existed else None)
+            if existed:
+                winapi.remove_font(dest)
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(data)
+            registry.write(key, value, want)
+            winapi.add_font(dest)
+        if changed and not self.dry_run:
+            winapi.font_change()
+        return changed
+
     def _state(self, target, spec, changes, files_changed):
         origin = f"{target.name}: state {spec['name']}"
         value = self.t(spec["value"], origin)
@@ -335,6 +461,11 @@ def run(root, palette, targets, dry_run=False, out=print):
     summary = []
     for target in targets:
         out(f"\n==> {target.name} — {target.description}")
+        if not target.supported:
+            where = ", ".join(target.platforms)
+            out(f"  só para {where}, pulando")
+            summary.append((target.name, f"pulado (só {where})"))
+            continue
         try:
             if not runner.detect(target):
                 out("  não detectado, pulando")

@@ -2,7 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import backup, contrast, icons, targets
+from . import backup, contrast, icons, platform, targets
 from .palette import Palette, PaletteError
 from .render import RenderError
 
@@ -17,7 +17,9 @@ def _only(values):
 
 
 def cmd_render(palette, args):
-    all_targets = targets.load_targets(ROOT)
+    # Only this platform's targets: rendering Linux targets on Windows would rewrite tracked
+    # templates (CRLF checkouts change the Plasma Style hash, docs/SPIKE-S0.md).
+    all_targets = [t for t in targets.load_targets(ROOT) if t.supported]
     runner = targets.Runner(ROOT, palette)
     for target in targets.select(all_targets, _only(args.only)) if args.only else all_targets:
         runner.render(target)
@@ -34,6 +36,8 @@ def cmd_check(palette, args):
 def cmd_list(palette, args):
     runner = targets.Runner(ROOT, palette)
     for target in targets.load_targets(ROOT):
+        if not target.supported:
+            continue
         detected = "detectado" if runner.detect(target) else "não detectado"
         repo, aur = target.packages()
         missing = targets.missing_packages(repo + aur)
@@ -51,6 +55,8 @@ def cmd_apply(palette, args):
         contrast.check(palette)
         print("\nAbortado: contraste insuficiente (ver ARCHITECTURE.md §3.4).")
         return False
+    if platform.is_windows():
+        print(f"Plataforma: {platform.describe()} (sem admin; estado em {platform.state_dir(palette.id)})")
     if args.dry_run:
         print("DRY-RUN: nada no sistema será alterado.")
     return targets.run(ROOT, palette, selected, dry_run=args.dry_run)
@@ -103,6 +109,11 @@ def main(argv=None):
     p.set_defaults(func=cmd_icon_theme)
 
     args = parser.parse_args(argv)
+    # Templates and user files are UTF-8; Python on Windows defaults to the ANSI code page.
+    if platform.is_windows() and not sys.flags.utf8_mode:
+        print("erro: no Windows rode via install.ps1/uninstall.ps1 (ou defina PYTHONUTF8=1)",
+              file=sys.stderr)
+        return 1
     try:
         palette = Palette(ROOT / "palette.toml")
         ok = args.func(palette, args)

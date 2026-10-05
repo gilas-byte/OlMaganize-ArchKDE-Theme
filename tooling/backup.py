@@ -5,12 +5,11 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-from . import blocks, kde
+from . import blocks, kde, platform
 
 
 def state_dir(theme_id):
-    base = os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state"
-    return Path(base) / theme_id
+    return platform.state_dir(theme_id)
 
 
 def _identity(entry):
@@ -19,7 +18,30 @@ def _identity(entry):
         return (kind, entry["path"])
     if kind == "key":
         return (kind, entry["file"], tuple(entry["group"]), entry["key"])
+    if kind == "registry":
+        return (kind, entry["key"], entry["name"])
+    if kind == "font":
+        return (kind, entry["path"])
     return (kind, entry["target"], entry["name"])
+
+
+def read_text_keep_newlines(path):
+    """(text, newline) of a user file. On Windows the newline style is kept on write-back, so
+    a managed block never converts a whole LF file to CRLF. Elsewhere newline is None and
+    behavior is unchanged (read_text/write_text)."""
+    path = Path(path)
+    if not platform.is_windows():
+        return path.read_text(), None
+    raw = path.read_bytes()
+    return path.read_text(), "\r\n" if b"\r\n" in raw else "\n"
+
+
+def write_text_newlines(path, text, newline):
+    if newline is None:
+        Path(path).write_text(text)
+    else:
+        with open(path, "w", newline=newline) as f:
+            f.write(text)
 
 
 def remove_path(path):
@@ -101,6 +123,7 @@ def restore(theme_id, only=None, dry_run=False, out=print, cwd=None):
         return True
 
     ok = True
+    notify = []
     for b, e in sorted(chosen.values(), reverse=True):
         manifest, data = backups[b]
         entry = data["entries"][e]
@@ -112,8 +135,10 @@ def restore(theme_id, only=None, dry_run=False, out=print, cwd=None):
         except (OSError, subprocess.CalledProcessError) as err:
             out(f"    erro: {err}")
             ok = False
+        notify += [n for n in entry.get("notify", []) if n not in notify]
     if dry_run:
         return ok
+    _notify(notify)
 
     for manifest, data in backups:
         changed = False
@@ -138,6 +163,12 @@ def describe(entry):
         group = "][".join(entry["group"])
         old = "(apagar chave)" if entry["old"] is None else repr(entry["old"])
         return f"{entry['file']} [{group}] {entry['key']} -> {old}"
+    if kind == "registry":
+        from .backends import registry
+        return f"{registry.display(entry['key'])} {entry['name']} -> {registry.show(entry['old'])}"
+    if kind == "font":
+        what = "restaurar" if entry.get("saved") else "remover"
+        return f"{what} fonte {entry['path']}"
     return f"{entry['name']} -> {entry['old'] or entry.get('default') or '(vazio)'}"
 
 
@@ -162,16 +193,50 @@ def _restore_one(entry, bdir, cwd):
         begin, end = entry["markers"]
         if not path.exists():
             return
-        cleaned = blocks.remove(path.read_text(), begin, end)
+        text, newline = read_text_keep_newlines(path)
+        cleaned = blocks.remove(text, begin, end)
         if saved is not None and cleaned.strip() == saved.read_text().strip():
             shutil.copy2(saved, path)
         elif saved is None and not cleaned.strip():
             path.unlink()
         else:
-            path.write_text(cleaned)
+            write_text_newlines(path, cleaned, newline)
     elif kind == "key":
         kde.restore(entry["file"], entry["group"], entry["key"], entry["old"])
+    elif kind == "registry":
+        from .backends import registry
+        registry.restore(entry["key"], entry["name"], entry["old"])
+        registry.remove_empty_keys(entry.get("created_keys", []))
+    elif kind == "font":
+        _restore_font(entry, saved)
     elif kind == "state":
         value = entry["old"] or entry.get("default") or ""
         env = dict(os.environ, GIBI_VALUE=value)
         subprocess.run(entry["restore"], shell=True, check=True, env=env, cwd=cwd)
+
+
+def _restore_font(entry, saved):
+    from .backends import registry, winapi
+    path = Path(entry["path"])
+    winapi.remove_font(path)
+    registry.restore(entry["key"], entry["name"], entry["old"])
+    registry.remove_empty_keys(entry.get("created_keys", []))
+    try:
+        remove_path(path)
+    except PermissionError:
+        raise OSError(f"{path} está em uso por algum app; feche-o (ou faça logoff) e apague à mão") from None
+    if saved is not None:
+        copy_path(saved, path)
+        winapi.add_font(path)
+
+
+def _notify(areas):
+    """Broadcasts recorded by the entries just restored (e.g. WM_SETTINGCHANGE after registry)."""
+    if not areas or not platform.is_windows():
+        return
+    from .backends import winapi
+    for area in areas:
+        if area == "fonts":
+            winapi.font_change()
+        else:
+            winapi.setting_change(area)
